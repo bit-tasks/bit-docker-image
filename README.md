@@ -14,6 +14,18 @@ docker run -it -v /Users/../<your-project-directory>:/workspace -p 3000:3000 bit
 ```
 Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore different versions.
 
+To reconnect to a running container:
+
+1. Check the container ID by using. If the container is not running you can first start it.
+```sh
+docker ps
+```
+
+2. Connect to the container
+```sh
+docker exec -it <container-id> /bin/bash
+```
+
 ---
 ## Building a Custom Docker Image
 You can build your custom image using the Docker file and create a container with Bit for application development. You can customize the Dockerfile to use a different Node version.
