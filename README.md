@@ -67,17 +67,19 @@ docker rm <image-name>
 # Contributor Guide
 If you plan to push a new image to Docker Hub, you can follow the below steps.
 
+**Note:** Use the correct node version suffix to the image name.
+
 1. Build the docker image locally
 
 ```sh
-docker build -t bitsrc/devimage:0.1.46 .
+docker build -t bitsrc/dev-node16:0.1.46 .
 
 ```
 
 2. Push the docker image
 
 ```
-docker push bitsrc/devimage:0.1.46
+docker push bitsrc/dev-node:0.1.46
 ```
 
 3. Update this Readme file by adding or updating the badge with the latest Bit version, for each Node.js version.
