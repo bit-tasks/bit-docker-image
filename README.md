@@ -1,4 +1,4 @@
-[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/r/bitsrc/devimage) [![Bit Docker](https://img.shields.io/badge/Image-bitsrc/devimage:0.1.46-yellow)](https://hub.docker.com/layers/bitsrc/devimage/0.1.46/images/sha256-ab2bffdcdd51ea5919dec32b708ea2568b170687c49e5d9f9865af2f831679ba?context=explore)
+[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) [![Bit Docker Node 16](https://img.shields.io/badge/Image-bitsrc/dev--node16:0.1.46-brightgreen)](https://hub.docker.com/r/bitsrc/dev-node16)
 # Docker Image for Bit Application Development
 
 ## Installing Docker
@@ -79,3 +79,7 @@ docker build -t bitsrc/devimage:0.1.46 .
 ```
 docker push bitsrc/devimage:0.1.46
 ```
+
+3. Update this Readme file by adding or updating the badge with the latest Bit version, for each Node.js version.
+
+   [![Bit Docker Node 16](https://img.shields.io/badge/Image-bitsrc/dev--node16:0.1.46-brightgreen)](https://hub.docker.com/r/bitsrc/dev-node16)
