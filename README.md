@@ -59,7 +59,7 @@ docker rmi <image-name>
 
 **Delete all dangling docker images (images without names)**
 ```sh
-docker rmi
+docker image prune
 ```
 
 **Delete docker container**
