@@ -13,5 +13,9 @@ ENV SHELL=/bin/bash
 # Run the command to install @teambit/bvm using NPX
 RUN npx @teambit/bvm install
 
+# Set the correct registry for @bit, @teambit
+RUN npm config set '@bit:registry' https://node-registry.bit.cloud
+RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
+
 # Set the default command to start a shell
 CMD ["/bin/bash"]
