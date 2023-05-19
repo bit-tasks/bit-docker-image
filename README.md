@@ -6,9 +6,9 @@ Install Docker using [Docker Desktop](https://www.docker.com/products/docker-des
 
 ## Use the Image from Docker Hub
 ```sh
-docker run -it -v /Users:/workspace bitsrc/devimage<version>
+docker run -it -v /Users/../<your-project-directory>:/workspace bitsrc/devimage:0.1.46
 ```
-Check images from BitSrc for versions available.
+Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore the availability of different versions.
 
 ## Buildind your Custom Docker Image
 You can build your custom image using the Docker file and create a container with Bit for application development.
