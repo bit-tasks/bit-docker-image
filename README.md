@@ -63,3 +63,19 @@ docker rmi
 ```sh
 docker rm <image-name>
 ```
+
+# Contributor Guide
+If you plan to push a new image to Docker Hub, you can follow the below steps.
+
+1. Build the docker image locally
+
+```sh
+docker build -t bitsrc/devimage:0.1.46 .
+
+```
+
+2. Push the docker image
+
+```
+docker push bitsrc/devimage:0.1.46
+```
