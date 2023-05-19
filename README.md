@@ -1,17 +1,19 @@
+[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/r/bitsrc/devimage) [![Bit Docker](https://img.shields.io/badge/Image-bitsrc/devimage:0.1.46-yellow)](https://hub.docker.com/layers/bitsrc/devimage/0.1.46/images/sha256-ab2bffdcdd51ea5919dec32b708ea2568b170687c49e5d9f9865af2f831679ba?context=explore)
 # Docker Image for Bit Application Development
 
 ## Installing Docker
 
 Install Docker using [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-## Use the Image from Docker Hub
+## Using the Image from Docker Hub
 ```sh
 docker run -it -v /Users/../<your-project-directory>:/workspace bitsrc/devimage:0.1.46
 ```
-Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore the availability of different versions.
+Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage)to explore different versions.
 
-## Buildind your Custom Docker Image
-You can build your custom image using the Docker file and create a container with Bit for application development.
+---
+## Building a Custom Docker Image
+You can build your custom image using the Docker file and create a container with Bit for application development. You can customize the Dockerfile to use a different Node version.
 
 ### Building the Docker Image
 ```sh
