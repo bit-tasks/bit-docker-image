@@ -64,7 +64,7 @@ docker rmi
 
 **Delete docker container**
 ```sh
-docker rm <image-name>
+docker rm <container-name>
 ```
 
 # Contributor Guide
