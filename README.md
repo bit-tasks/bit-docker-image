@@ -1,11 +1,14 @@
 [![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) [![Bit Docker Node 17](https://img.shields.io/badge/Image-bitsrc/dev--node17:0.1.46-brightgreen)](https://hub.docker.com/r/bitsrc/dev-node17) [![Bit Docker Node 16](https://img.shields.io/badge/Image-bitsrc/dev--node16:0.1.46-brightgreen)](https://hub.docker.com/r/bitsrc/dev-node16) 
-# Docker Image for Bit Application Development
+# Docker Images for Bit Application Development
 
 ## Installing Docker
 
 Install Docker using [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Using the Image from Docker Hub
+
+**Note:** Choose the image with the node version that you prefer.
+
 ```sh
 docker run -it -v /Users/../<your-project-directory>:/workspace bitsrc/dev-node16:0.1.46
 ```
