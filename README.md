@@ -7,10 +7,10 @@ Install Docker using [Docker Desktop](https://www.docker.com/products/docker-des
 
 ## Using the Image from Docker Hub
 
-**Note:** Choose the image with the node version that you prefer.
+**Note:** Choose the image with the node version that you prefer. If you have multiple app components, expose the ports accordingly.
 
 ```sh
-docker run -it -v /Users/../<your-project-directory>:/workspace bitsrc/dev-node16:0.1.46
+docker run -it -v /Users/../<your-project-directory>:/workspace -p 3000:3000 bitsrc/dev-node16:0.1.46
 ```
 Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore different versions.
 
