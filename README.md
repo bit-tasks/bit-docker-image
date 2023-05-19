@@ -9,7 +9,7 @@ Install Docker using [Docker Desktop](https://www.docker.com/products/docker-des
 ```sh
 docker run -it -v /Users/../<your-project-directory>:/workspace bitsrc/devimage:0.1.46
 ```
-Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage)to explore different versions.
+Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore different versions.
 
 ---
 ## Building a Custom Docker Image
