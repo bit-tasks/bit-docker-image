@@ -16,9 +16,7 @@ When choosing the mounting path, refer [file sharing](https://docs.docker.com/de
 - **/Users**
 - **~/Workspace**
 
-**Tip:** Use the [Docker Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) to easily access containers.
-
-To reconnect to a running container manually (without the VSCode extension):
+Use the [Docker Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) to easily access containers. To reconnect to a running container manually:
 
 1. Check the container ID by using. If the container is not running you can first start it.
 ```sh
