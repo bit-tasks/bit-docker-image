@@ -13,8 +13,8 @@ Install Docker using [Docker Desktop](https://www.docker.com/products/docker-des
 docker run -it -v ~/Workspace:/workspace -p 3000:3000 bitsrc/dev-node16m:0.1.46
 ```
 When choosing the mounting path, refer [file sharing](https://docs.docker.com/desktop/settings/mac/#file-sharing) guidelines in Docker Desktop.
-- **~/Workspace**
 - **/Users**
+- **~/Workspace**
 
 **Tip:** Use the [Docker Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) to easily access containers.
 
