@@ -29,6 +29,8 @@ docker ps
 docker exec -it <container-id> /bin/bash
 ```
 
+**Tip:** Use the [Docker Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) to simplify usage of containers. You can connect to the container with a press of a button.
+
 ---
 ## Building a Custom Docker Image
 You can build your custom image using the Docker file and create a container with Bit for application development. You can customize the Dockerfile to use a different Node version.
