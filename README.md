@@ -14,7 +14,7 @@ docker run -it -v ~/Workspace:/workspace -p 3000:3000 bitsrc/dev-node16m:0.1.46
 ```
 When choosing the mounting path, refer [file sharing](https://docs.docker.com/desktop/settings/mac/#file-sharing) guidelines in Docker Desktop.
 - **~/Workspace**
-- **~/Users**
+- **/Users**
 
 
 To reconnect to a running container:
