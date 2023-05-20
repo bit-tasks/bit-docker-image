@@ -7,12 +7,15 @@ Install Docker using [Docker Desktop](https://www.docker.com/products/docker-des
 
 ## Using the Image from Docker Hub
 
-**Note:** Choose the image with the node version that you prefer. If you have multiple app components, expose the ports accordingly.
+**Note:** Choose the image with the node version that you prefer. If you have multiple app components, expose the ports accordingly. Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore different versions.
 
 ```sh
-docker run -it -v /Users/../<your-project-directory>:/workspace -p 3000:3000 bitsrc/dev-node16m:0.1.46
+docker run -it -v ~/Workspace:/workspace -p 3000:3000 bitsrc/dev-node16m:0.1.46
 ```
-Each container version is aligned with the corresponding Bit version. Vist [DockerHub](https://hub.docker.com/r/bitsrc/devimage) to explore different versions.
+When choosing the mounting path, you can follow the [file sharing guidelines](https://docs.docker.com/desktop/settings/mac/#file-sharing) in Docker Desktop.
+- **~/Workspace**
+- **~/Users**
+
 
 To reconnect to a running container:
 
