@@ -1,4 +1,4 @@
-[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) ![version](https://img.shields.io/badge/Image-bitsrc/dev:0.1.48-brightgreen)
+[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) ![version](https://img.shields.io/badge/Image-bitsrc/dev:0.1.48-brightgreen) ![version](https://img.shields.io/badge/Image-bitsrc/dev:0.1.48m-brightgreen) ![version](https://img.shields.io/badge/Image-bitsrc/dev:0.1.42-brightgreen) ![version](https://img.shields.io/badge/Image-bitsrc/dev:0.1.42m-brightgreen)
 # Docker Image for Bit Application Development
 
 ## Getting Started
