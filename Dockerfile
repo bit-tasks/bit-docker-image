@@ -1,30 +1,19 @@
-# Build arguments
-ARG NODE_IMAGE_VARIANT=16
-ARG BIT_VERSION
-ARG NODE_HEAP_SIZE=4096
-
-# Use Node.js default 16 as the base image
-FROM node:${NODE_IMAGE_VARIANT}
-
-LABEL nodeimage.version=${NODE_IMAGE_VARIANT}
-LABEL node.heap.size=${NODE_HEAP_SIZE}
-LABEL bit.version=${BIT_VERSION}
+FROM node:16
 
 # Set the working directory
 WORKDIR /workspace
-
-# Install TypeScript if not already installed
-RUN npm list -g typescript || npm install -g typescript
 
 # Set the SHELL environment variable to your shell name
 ENV SHELL=/bin/bash
 
 # Install the given Bit version
+ARG BIT_VERSION
+LABEL bit.version=${BIT_VERSION}
 RUN npm install -g @teambit/bvm
 RUN bvm install ${BIT_VERSION}
 ENV PATH=$PATH:/root/bin
 
-# Install system packages and clean up in a single step
+# Install system packages needed for Bit development server
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         libasound2 \
@@ -45,6 +34,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the NODE_OPTIONS environment variable to increase the heap size
+ARG NODE_HEAP_SIZE=4096
+LABEL node.heap.size=${NODE_HEAP_SIZE}
 ENV NODE_OPTIONS="--max-old-space-size=${NODE_HEAP_SIZE}"
 
 # Set the correct registry for @bit, @teambit
