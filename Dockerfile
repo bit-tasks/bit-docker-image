@@ -1,10 +1,14 @@
-# Set the base Node.js version as a build argument
+# Build arguments
 ARG NODE_IMAGE_VARIANT=16
+ARG BIT_VERSION
+ARG NODE_HEAP_SIZE=4096
 
 # Use Node.js default 16 as the base image
 FROM node:${NODE_IMAGE_VARIANT}
 
 LABEL nodeimage.version=${NODE_IMAGE_VARIANT}
+LABEL node.heap.size=${NODE_HEAP_SIZE}
+LABEL bit.version=${BIT_VERSION}
 
 # Set the working directory
 WORKDIR /workspace
@@ -15,14 +19,10 @@ RUN npm list -g typescript || npm install -g typescript
 # Set the SHELL environment variable to your shell name
 ENV SHELL=/bin/bash
 
-# Set the BVM version as a build argument
-ARG BIT_VERSION
-
 # Install the given Bit version
 RUN npm install -g @teambit/bvm
 RUN bvm install ${BIT_VERSION}
-
-LABEL bit.version=${BIT_VERSION}
+ENV PATH=$PATH:/root/bin
 
 # Install system packages and clean up in a single step
 RUN apt-get update \
@@ -44,10 +44,6 @@ RUN apt-get update \
         libcups2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the node heap size as a build argument and label
-ARG NODE_HEAP_SIZE=4096
-LABEL node.heap.size=${NODE_HEAP_SIZE}
-
 # Set the NODE_OPTIONS environment variable to increase the heap size
 ENV NODE_OPTIONS="--max-old-space-size=${NODE_HEAP_SIZE}"
 
@@ -55,5 +51,11 @@ ENV NODE_OPTIONS="--max-old-space-size=${NODE_HEAP_SIZE}"
 RUN npm config set '@bit:registry' https://node-registry.bit.cloud
 RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
 
+# Set the default bit configurations for docker
+RUN bit config set analytics_reporting false
+RUN bit config set no_warnings false
+RUN bit config set interactive false
+RUN bit config set error_reporting true
+
 # Set the default command to start a shell
-CMD ["/bin/bash", "-c", "echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc && source ~/.bashrc && exec /bin/bash"]
+CMD ["/bin/bash"]
