@@ -9,7 +9,7 @@ on:
         description: 'Tag image as latest (true|false)'
         required: false
       max_node_heap:
-          description: 'Increase node heap to 8192 (true|false)'
+          description: 'Increase node heap (true|false)'
           required: false
 
 jobs:
