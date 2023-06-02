@@ -1,13 +1,16 @@
 name: Release Docker Image
 on:
-  push:
-    tags:
-      - "*"
   workflow_dispatch:
     inputs:
       bit_version:
-        description: 'BIT_VERSION'
+        description: 'Bit version'
         required: true
+      latest:
+        description: 'Tag image as latest'
+        required: false
+      max_node_heap:
+          description: 'Increase node heap to 8192'
+          required: false
 
 jobs:
   release:
@@ -18,10 +21,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
-      - name: Get Git tag name
-        id: get_tag_name
-        run: echo "::set-output name=TAG_NAME::${{ github.event.inputs.bit_version || (git describe --tags --abbrev=0) }}"
 
       - name: Log in to Docker registry
         uses: docker/login-action@v1
@@ -35,8 +34,10 @@ jobs:
         with:
           context: .
           push: true
-          tags: bitsrc/dev:latest
+          tags: |
+            bitsrc/dev:${{ github.event.inputs.bit_version }}${{ github.event.inputs.max_node_heap == 'true' && 'm' }}
+            ${{ github.event.inputs.latest == 'true' && 'bitsrc/dev:latest' }}
           platforms: linux/amd64,linux/arm64
           build-args: |
-            BIT_VERSION=${{ steps.get_tag_name.outputs.TAG_NAME }}
-
+            BIT_VERSION=${{ github.event.inputs.bit_version }}
+            ${{ github.event.inputs.max_node_heap == 'true' && 'NODE_HEAP_SIZE=8192' }}
