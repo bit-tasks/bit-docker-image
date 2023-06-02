@@ -6,10 +6,10 @@ on:
         description: 'Bit version'
         required: true
       latest:
-        description: 'Tag image as latest'
+        description: 'Tag image as latest (true|false)'
         required: false
       max_node_heap:
-          description: 'Increase node heap to 8192'
+          description: 'Increase node heap to 8192 (true|false)'
           required: false
 
 jobs:
