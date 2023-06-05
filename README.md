@@ -29,7 +29,7 @@ If you plan to push a new image to Docker Hub, you can follow the below steps.
 1. Build the docker image locally
 
 ```sh
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 -t bitsrc/dev:0.1.52m . --push
+docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 -t bitsrc/dev:0.1.52 . --push
 ```
 
 ## NODE_HEAP_SIZE (Optional, Default 4096)

@@ -35,8 +35,8 @@ jobs:
           context: .
           push: true
           tags: |
-            bitsrc/dev:${{ github.event.inputs.bit_version }}${{ github.event.inputs.max_node_heap == 'true' ? 'm' : '' }}
-            ${{ github.event.inputs.latest == 'true' ? 'bitsrc/dev:latest' : '' }}
+            bitsrc/dev:${{ github.event.inputs.bit_version }}${{ github.event.inputs.max_node_heap == 'true' && 'm' || '' }}
+            ${{ github.event.inputs.latest == 'true' && 'bitsrc/dev:latest' || '' }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             BIT_VERSION=${{ github.event.inputs.bit_version }}
