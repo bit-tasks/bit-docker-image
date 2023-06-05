@@ -1,17 +1,10 @@
 FROM node:16
 
-# Set the working directory
-WORKDIR /workspace
-
 # Set the SHELL environment variable to your shell name
 ENV SHELL=/bin/bash
 
-# Install the given Bit version
-ARG BIT_VERSION
-LABEL bit.version=${BIT_VERSION}
-RUN npm install -g @teambit/bvm
-RUN bvm install ${BIT_VERSION}
-ENV PATH=$PATH:/root/bin
+# Create app directory
+WORKDIR /usr/src/workspace
 
 # Install system packages needed for Bit development server
 RUN apt-get update \
@@ -31,7 +24,35 @@ RUN apt-get update \
         libxkbcommon0 \
         libxrandr2 \
         libcups2 \
+        zstd \
     && rm -rf /var/lib/apt/lists/*
+
+# Create a new user "bituser" and switch to it
+RUN useradd -m bituser
+USER bituser
+
+# Create the workspace directory within the user's home directory
+RUN mkdir -p /home/bituser/workspace
+
+# Set the correct permissions for the workspace directory
+RUN chown -R bituser:bituser /home/bituser/workspace
+
+# Set the working directory to the user's workspace
+WORKDIR /home/bituser/workspace
+
+# Create a directory for global installations
+RUN mkdir /home/bituser/.npm-global
+
+# Configure npm to use the new directory path
+ENV PATH=/home/bituser/.npm-global/bin:$PATH
+ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
+
+# Install the given Bit version
+ARG BIT_VERSION
+LABEL bit.version=${BIT_VERSION}
+RUN npm install -g @teambit/bvm
+RUN bvm install ${BIT_VERSION}
+ENV PATH=$PATH:/home/bituser/bin
 
 # Set the NODE_OPTIONS environment variable to increase the heap size
 ARG NODE_HEAP_SIZE=4096
