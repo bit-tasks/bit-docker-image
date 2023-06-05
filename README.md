@@ -11,9 +11,9 @@
 
 ## Using the Image
 
-Pull the Docker Image (e.g For bit version 0.1.48) using CLI or VSCode extension.
+Pull the Docker Image using CLI or VSCode extension.
 
-> `docker pull bitsrc/dev:0.1.48`
+> `docker pull bitsrc/dev:latest`
 
 Start the container and attach to it from VSCode (via Docker extension).
 
@@ -26,11 +26,13 @@ For more information on best practices:
 # Contributor Guide
 If you plan to push a new image to Docker Hub, you can follow the below steps.
 
-1. Build the docker image locally
+Build the docker image locally and publish
 
 ```sh
 docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 -t bitsrc/dev:0.1.52 . --push
 ```
+
+**Note:** To run the build image locally, use a single platform (either `linuxamd64, linux/arm64`) and use `--load` parameter replacing `--push`
 
 ## NODE_HEAP_SIZE (Optional, Default 4096)
 
