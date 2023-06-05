@@ -21,7 +21,7 @@ Start the container and attach to it from VSCode (via Docker extension).
 
 For more information on best practices:
 
-- [Developing inside a Contaienr](https://code.visualstudio.com/docs/devcontainers/containers)
+- [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
 
 # Contributor Guide
 If you plan to push a new image to Docker Hub, you can follow the below steps.
