@@ -47,8 +47,6 @@ docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0
 
 **Note:** For image naming convensions, use the suffix `m` added to the version for heap size 8192.
 
-2. Push the docker image to Docker Hub
+## Using GitHub Action
 
-```
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 --build-arg NODE_HEAP_SIZE=8192 -t bitsrc/dev:0.1.52m . --push
-```
+You can use the GitHub Action specified in this repository to release never versions of the image.
