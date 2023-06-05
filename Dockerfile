@@ -3,9 +3,6 @@ FROM node:16
 # Set the SHELL environment variable to your shell name
 ENV SHELL=/bin/bash
 
-# Create app directory
-WORKDIR /usr/src/workspace
-
 # Install system packages needed for Bit development server
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
