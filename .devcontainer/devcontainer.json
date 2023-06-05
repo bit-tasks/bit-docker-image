@@ -1,0 +1,8 @@
+{
+  "name": "Dev Container",
+  "image": "bitsrc/dev:latest",
+  "workspaceFolder": "/home/bituser/workspace",
+  "forwardPorts": [],
+  "postCreateCommand": "cd /home/bituser/workspace",
+  "remoteUser": "bituser"
+}
