@@ -1,3 +1,4 @@
 FROM bitsrc/dev:latest
 WORKDIR /opshome
+ENV HOME=/home/bituser
 CMD ["/bin/bash"]
