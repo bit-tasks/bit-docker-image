@@ -1,3 +1,11 @@
 FROM bitsrc/dev:latest
+
+# Copy All Scripts
+COPY scripts /home/bituser/scripts
+RUN chmod +x /home/bituser/scripts/*
+
+# Add scripts to path
+ENV PATH=$PATH:/home/bituser/scripts
+
 WORKDIR /opshome
 CMD ["/bin/bash"]
