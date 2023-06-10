@@ -1,23 +1,32 @@
 #!/bin/bash
+
 url=$1
 timeout=${2:-300}
 frequency=${3:-1}
 
 start_time=$(date +%s)
-end_time=$(($start_time + $timeout))
+end_time=$((start_time + timeout))
+
+seconds_text() {
+  local value=$1
+  if [ $value -eq 1 ]; then
+    echo "second"
+  else
+    echo "seconds"
+  fi
+}
 
 while [ $(date +%s) -lt $end_time ]; do
-  current_time=$(date +%s)
-  elapsed_time=$((current_time - start_time))
+  elapsed_time=$(( $(date +%s) - start_time ))
 
   if curl --output /dev/null --silent --head "$url"; then
-    echo "Server is up (total elapsed time: $elapsed_time seconds)"
+    echo "Server is up (total elapsed time: $elapsed_time $(seconds_text $elapsed_time))"
     exit 0
   else
-    echo "Server is not yet up (waiting time: $elapsed_time seconds), sleeping for $frequency seconds..."
+    echo "Server is not yet up (waiting time: $elapsed_time $(seconds_text $elapsed_time)), sleeping for $frequency $(seconds_text $frequency)..."
     sleep $frequency
   fi
 done
 
-echo "Server did not start within $timeout seconds"
+echo "Server did not start within $timeout $(seconds_text $timeout)"
 exit 1
