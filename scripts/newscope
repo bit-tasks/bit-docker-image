@@ -1,0 +1,33 @@
+#!/bin/bash
+
+name=$1
+workspaceDirPath=$2
+
+timestamp=$(date +%s)
+seed=$((timestamp + $(shuf -i 0-32767 -n 1)))
+port=$(( seed % (10000 - 4000 + 1) + 4000 ))
+
+currentdir=$(pwd)
+
+# Create the directory for the bare scope
+mkdir "$name"
+cd "$name"
+
+# Initialize the bare scope
+bit init --bare
+
+# Start the Bit server and wait for it to be up
+bit start --port "$port" --no-browser &
+checkserver "http://localhost:$port"
+
+# Print success message
+echo "Bare Scope '$name' created on port $port. Accessible at http://localhost:$port."
+
+# Add the remote Bare Scope to the workspace
+cd "$workspaceDirPath" && bit remote add "http://localhost:$port"
+
+# Print success message
+echo "Updated the workspace with the remote Bare Scope '$name'."
+
+# Return to the original directory
+cd "$currentdir"
