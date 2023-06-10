@@ -23,6 +23,9 @@ checkserver "http://localhost:$port"
 # Print success message
 echo "Bare Scope '$name' created on port $port. Accessible at http://localhost:$port."
 
+# Return to the original directory
+cd "$currentdir"
+
 # Add the remote Bare Scope to the workspace
 cd "$workspaceDirPath" && bit remote add "http://localhost:$port"
 
