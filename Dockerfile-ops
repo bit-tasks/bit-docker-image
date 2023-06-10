@@ -1,4 +1,3 @@
 FROM bitsrc/dev:latest
 WORKDIR /opshome
-ENV HOME=/home/bituser
-CMD ["/bin/bash"]
+CMD ["bash", "-c", "export HOME=/home/bituser && /bin/bash"]
