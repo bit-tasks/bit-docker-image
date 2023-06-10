@@ -1,6 +1,5 @@
 FROM bitsrc/dev:latest
 
-
 USER root
 COPY scripts /home/bituser/scripts
 RUN chown -R bituser:bituser /home/bituser/scripts
