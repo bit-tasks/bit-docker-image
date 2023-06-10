@@ -1,3 +1,4 @@
 FROM bitsrc/dev:latest
 WORKDIR /opshome
-CMD ["bash", "-c", "export HOME=/home/bituser && /bin/bash"]
+ENTRYPOINT ["bash", "-c", "export HOME=/home/bituser && exec \"$@\"", "bash"]
+CMD ["/bin/bash"]
