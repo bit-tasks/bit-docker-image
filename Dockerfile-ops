@@ -1,8 +1,9 @@
 FROM bitsrc/dev:latest
 
-# Copy All Scripts
+# Copy all scripts and add execution permission
 COPY scripts /home/bituser/scripts
-RUN chmod +x /home/bituser/scripts/*
+RUN find /home/bituser/scripts -type f -iname "*.sh" -exec chmod +x {} \; \
+    && chown -R bituser:bituser /home/bituser/scripts
 
 # Add scripts to path
 ENV PATH=$PATH:/home/bituser/scripts
