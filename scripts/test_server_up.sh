@@ -7,11 +7,14 @@ start_time=$(date +%s)
 end_time=$(($start_time + $timeout))
 
 while [ $(date +%s) -lt $end_time ]; do
+  current_time=$(date +%s)
+  elapsed_time=$((current_time - start_time))
+
   if curl --output /dev/null --silent --head "$url"; then
     echo "Server is up"
     exit 0
   else
-    echo "Server is not yet up, sleeping for $frequency seconds..."
+    echo "Server is not yet up (waiting time: $elapsed_time seconds), sleeping for $frequency seconds..."
     sleep $frequency
   fi
 done
