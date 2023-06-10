@@ -11,7 +11,7 @@ while [ $(date +%s) -lt $end_time ]; do
   elapsed_time=$((current_time - start_time))
 
   if curl --output /dev/null --silent --head "$url"; then
-    echo "Server is up"
+    echo "Server is up (total elapsed time: $elapsed_time seconds)"
     exit 0
   else
     echo "Server is not yet up (waiting time: $elapsed_time seconds), sleeping for $frequency seconds..."
