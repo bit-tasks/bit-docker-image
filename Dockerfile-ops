@@ -4,8 +4,6 @@ USER root
 COPY scripts /home/bituser/scripts
 RUN chown -R bituser:bituser /home/bituser/scripts
 RUN chmod +x /home/bituser/scripts/*
-
-# Add scripts to path
 ENV PATH=$PATH:/home/bituser/scripts
 User bituser
 
