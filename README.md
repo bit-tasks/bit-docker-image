@@ -120,7 +120,7 @@ bit start &
 checkserver http://localhost:3000 600 5 # maximum timeout: 600 seconds, check frequency: 5 seconds
 ```
 
-**Note:** You have to use '&' to run the dev server in the background, before executing `checkserver` command
+**Note:** You have to use '&' to run the dev server in the background, before executing `checkserver` command.
 
 ### BareScope
 `barescope` command let's you create Bare Scope in your CI environment.
