@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:18
 
 # Set the SHELL environment variable to your shell name
 ENV SHELL=/bin/bash
