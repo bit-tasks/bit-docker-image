@@ -39,6 +39,7 @@ WORKDIR /home/bituser/workspace
 
 # Create a directory for global installations
 RUN mkdir /home/bituser/.npm-global
+RUN mkdir -p /home/bituser/.npm-global/lib
 
 # Configure npm to use the new directory path
 ENV PATH=/home/bituser/.npm-global/bin:$PATH
