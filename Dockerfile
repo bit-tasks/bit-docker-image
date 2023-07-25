@@ -44,11 +44,8 @@ RUN mkdir /home/bituser/.npm-global
 ENV PATH=/home/bituser/.npm-global/bin:$PATH
 ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
 
-# Install the given Bit version
-ARG BIT_VERSION
-LABEL bit.version=${BIT_VERSION}
-RUN npm install -g @teambit/bvm
-RUN bvm install ${BIT_VERSION}
+# Install Bit
+RUN npx @teambit/bvm install
 ENV PATH=$PATH:/home/bituser/bin
 
 # Set the NODE_OPTIONS environment variable to increase the heap size
@@ -61,10 +58,9 @@ RUN npm config set '@bit:registry' https://node-registry.bit.cloud
 RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
 
 # Set the default bit configurations for docker
-RUN bit config set analytics_reporting false
-RUN bit config set no_warnings false
-RUN bit config set interactive false
-RUN bit config set error_reporting true
+ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
+ENV BIT_CONFIG_ANONYMOUS_REPORTING="false"
+ENV BIT_CONFIG_INTERACTIVE="false"
 
 # Set the default command to start a shell
 CMD ["/bin/bash"]
