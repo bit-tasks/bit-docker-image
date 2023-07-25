@@ -1,16 +1,6 @@
 name: Release Dev Image
 on:
   workflow_dispatch:
-    inputs:
-      bit_version:
-        description: 'Bit version'
-        required: true
-      latest:
-        description: 'Tag image as latest (true|false)'
-        required: false
-      max_node_heap:
-          description: 'Increase node heap (true|false)'
-          required: false
 
 jobs:
   release:
@@ -35,9 +25,5 @@ jobs:
           context: .
           push: true
           tags: |
-            bitsrc/dev:${{ github.event.inputs.bit_version }}${{ github.event.inputs.max_node_heap == 'true' && 'm' || '' }}
-            ${{ github.event.inputs.latest == 'true' && 'bitsrc/dev:latest' || '' }}
+            bitsrc/dev:latest
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            BIT_VERSION=${{ github.event.inputs.bit_version }}
-            ${{ github.event.inputs.max_node_heap == 'true' && 'NODE_HEAP_SIZE=8192' }}
