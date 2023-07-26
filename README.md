@@ -154,7 +154,7 @@ docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0
 
 ## NODE_HEAP_SIZE (Optional, Default 4096)
 
-You can specify a custom heap size for the image.
+Specify a custom heap size for the image.
 
 - 4096 (default)
 - 8192
