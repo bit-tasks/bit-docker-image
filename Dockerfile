@@ -45,7 +45,8 @@ RUN mkdir -p /home/bituser/.npm-global/lib
 ENV PATH=/home/bituser/.npm-global/bin:$PATH
 ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
 
-# Install Bit
+# Install BVM and Bit
+RUN npm install -g @teambit/bvm
 RUN npx @teambit/bvm install
 ENV PATH=$PATH:/home/bituser/bin
 
@@ -62,6 +63,13 @@ RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
 ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
 ENV BIT_CONFIG_ANONYMOUS_REPORTING="false"
 ENV BIT_CONFIG_INTERACTIVE="false"
+
+USER root
+COPY scripts /home/bituser/scripts
+RUN chown -R bituser:bituser /home/bituser/scripts
+RUN chmod +x /home/bituser/scripts/*
+ENV PATH=$PATH:/home/bituser/scripts
+User bituser
 
 # Set the default command to start a shell
 CMD ["/bin/bash"]
