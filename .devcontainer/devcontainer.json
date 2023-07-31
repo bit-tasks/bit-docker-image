@@ -1,6 +1,6 @@
 {
   "name": "Bit Dev Container",
-  "image": "bitsrc/dev:latest",
+  "image": "bitsrc/nightly:latest",
   "forwardPorts": [],
   "remoteUser": "bituser"
 }
