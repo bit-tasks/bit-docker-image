@@ -1,5 +1,5 @@
-[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) [![version](https://img.shields.io/badge/Image-bitsrc/dev:latest-brightgreen)](https://hub.docker.com/layers/bitsrc/dev/latest/images/sha256-e0f1fe5332e633b382185b08c17d0e3a7db898ec648f79eaa9bfa40caa663ce0?context=explore)
-# Docker Image for Bit Application Development
+[![Bit Docker](https://img.shields.io/badge/Bit-Docker-086dd7)](https://hub.docker.com/u/bitsrc) [![version](https://img.shields.io/badge/Image-bitsrc/stable:latest-brightgreen)](https://hub.docker.com/layers/bitsrc/stable/latest/images/sha256-e0f1fe5332e633b382185b08c17d0e3a7db898ec648f79eaa9bfa40caa663ce0?context=explore)
+# Docker Images for Bit DevOps
 
 ## Getting Started
 
@@ -9,11 +9,11 @@
 
 3. Install [VSCode Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
 
-## Using the Dev Image
+## Using the Stable Image
 
 Pull the Docker Image using CLI or VSCode extension.
 
-> `docker pull bitsrc/dev:latest`
+> `docker pull bitsrc/stable:latest`
 
 Start the container and attach to it from VSCode (via Docker extension).
 
@@ -23,14 +23,21 @@ For more information on best practices:
 
 - [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
 
-
-## Using the Ops Image
+## Using the Nightly Image
 
 Pull the Docker Image using CLI or VSCode extension.
 
-> `docker pull bitsrc/ops:latest`
+> `docker pull bitsrc/nightly:latest`
 
-Use it in your CI environments. e.g:
+Start the container and attach to it from VSCode (via Docker extension).
+
+![VSCode Docker Attach](images/vscode-docker-attach.png)
+
+For more information on best practices:
+
+- [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
+
+## Using with CI/CD
 
 ### Github Actions
 
@@ -46,7 +53,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: bitsrc/ops:latest
+      image: bitsrc/stable:latest
     env:
       HOME: /home/bituser
     steps:
@@ -71,7 +78,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   container:
-    image: bitsrc/ops:latest
+    image: bitsrc/stable:latest
   env:
     HOME: /home/bituser
   steps:
@@ -95,7 +102,7 @@ variables:
 
 build:
   stage: build
-  image: bitsrc/ops:latest
+  image: bitsrc/stable:latest
   variables:
     HOME: /bit
   script:
@@ -147,7 +154,7 @@ If you plan to push a new image to Docker Hub, you can follow the below steps.
 Build the docker image locally and publish
 
 ```sh
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 -t bitsrc/dev:0.1.52 . --push
+docker buildx build --platform linux/amd64,linux/arm64 -t bitsrc/stable:latest . --push
 ```
 
 **Note:** To run the build image locally, use a single platform (either `linuxamd64, linux/arm64`) and use `--load` parameter replacing `--push`
@@ -160,10 +167,8 @@ Specify a custom heap size for the image.
 - 8192
 
 ```
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg BIT_VERSION=0.1.52 --build-arg NODE_HEAP_SIZE=8192 -t bitsrc/dev:0.1.52m . --push
+docker buildx build --platform linux/amd64,linux/arm64 --build-arg NIGHTLY=true --build-arg NODE_HEAP_SIZE=8192 -t bitsrc/stable:latest . --push
 ```
-
-**Note:** For image naming convensions, use the suffix `m` added to the version for heap size 8192.
 
 ## Using GitHub Action
 
