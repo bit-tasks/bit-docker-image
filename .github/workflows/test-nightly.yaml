@@ -1,0 +1,32 @@
+name: Test Nightly Image
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: bitsrc/nightly:latest
+    env:
+      HOME: /home/bituser
+        
+    steps:
+    - name: Show BVM config
+      run: |
+        bvm config
+    - name: Bit install
+      run: |
+        cd test-ws
+        bit install
+    - name: Test checkserver
+      run: |
+        cd test-ws
+        bit start &
+        checkserver http://localhost:3000
+    - name: Create a local scope
+      run: |
+        barescope org.scope-name test-ws
+    continue-on-error: false

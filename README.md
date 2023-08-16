@@ -9,29 +9,22 @@
 
 3. Install [VSCode Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
 
-## Using the Stable Image
+## Using the Docker Image
 
-Pull the Docker Image using CLI or VSCode extension.
+Pull the Docker Image.
 
 > `docker pull bitsrc/stable:latest`
 
+> `docker pull bitsrc/nightly:latest`
+
+
 Start the container and attach to it from VSCode (via Docker extension).
 
-![VSCode Docker Attach](images/vscode-docker-attach.png)
+![VSCode Docker Attach](pics/vscode-docker-attach.png)
 
 For more information on best practices:
 
 - [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
-
-## Using the Nightly Image
-
-Pull the Docker Image using CLI or VSCode extension.
-
-> `docker pull bitsrc/nightly:latest`
-
-Start the container and attach to it from VSCode (via Docker extension).
-
-![VSCode Docker Attach](images/vscode-docker-attach.png)
 
 For more information on best practices:
 
@@ -79,8 +72,6 @@ jobs:
     vmImage: 'ubuntu-latest'
   container:
     image: bitsrc/stable:latest
-  env:
-    HOME: /home/bituser
   steps:
   - script: |
       bit -v
@@ -94,23 +85,17 @@ GitLab CI/CD
 
 # @file .gitlab-ci.yml
 
-stages:
-  - build
-
-variables:
-  HOME: "/home/bituser"
-
-build:
+image: bitsrc/stable:latest
+  
+build-job:
   stage: build
-  image: bitsrc/stable:latest
-  variables:
-    HOME: /bit
-  script:
-    - echo "Check bit version"
-    - bit -v
+  script: 
+    - |
+      echo "bit version: $(bit -v)"
 ```
 
-## Custom Scripts
+## Utility Scripts
+There is a collection of bit utility scripts available in the container.
 
 ### CheckServer
 `checkserver` command, let's you test `bit start` and `bit run <app-name>` commands
