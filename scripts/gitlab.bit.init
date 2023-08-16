@@ -32,3 +32,5 @@ export SCOPE
 # Print ORG and SCOPE values
 echo "ORG: $ORG"
 echo "SCOPE: $SCOPE"
+
+bit install
