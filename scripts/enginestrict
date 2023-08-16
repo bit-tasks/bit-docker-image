@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Use grep to get the line containing "engine", then use awk to extract the version string.
+engine_version=$(grep '"engine":' workspace.jsonc | awk -F'"' '{print $4}')
+
+# If the engine_version exists and is not empty
+if [[ ! -z "$engine_version" ]]; then
+    echo "Installing bit $engine_version"
+    bvm install "$engine_version" --use-system-node
+else
+    echo "Engine version not found in workspace.jsonc"
+    exit 1
+fi

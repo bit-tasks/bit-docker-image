@@ -133,6 +133,18 @@ bit tag --message "CI tag"
 bit export
 ```
 
+### EngineStrict
+`enginestrict` command let's you to install the bit engine version defined in the workspace.jsonc
+
+```
+"teambit.harmony/bit": {
+  "engine": "0.2.3",
+  "engineStrict": false // warning or error if the version of the engine is not the same as the workspace
+},
+```
+
+**Note:** Use `bvm list --remote` to list available bit versions.
+
 # Contributor Guide
 If you plan to push a new image to Docker Hub, you can follow the below steps.
 
