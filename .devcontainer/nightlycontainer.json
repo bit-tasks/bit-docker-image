@@ -1,5 +1,5 @@
 {
-  "name": "Bit Dev Container",
+  "name": "Bit Nightly",
   "image": "bitsrc/nightly:latest",
   "forwardPorts": [],
   "remoteUser": "bituser"
