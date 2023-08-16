@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Check if GITLAB_ACCESS_TOKEN is set
+if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
+    echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Check if CI_PROJECT_ID is set
+if [[ -z "$CI_PROJECT_ID" ]]; then
+    echo "Error: Run this task in gitlab"
+    exit 1
+fi
+
+# Check if CI_MERGE_REQUEST_ID is set
+if [[ -z "$CI_MERGE_REQUEST_ID" ]]; then
+    echo "Error: Run this task as a merge request trigger"
+    exit 1
+fi
+
+# Get laneName from environment variable
+prNumber="$CI_MERGE_REQUEST_ID"
+laneName="pr-${prNumber}"
+
+# Build the lane link
+laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+
+# Remove the bit lane
+bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || echo "Error while removing bit lane. Lane may not exist."
+
+# The rest of the commands
+bit status --strict
+bit lane create "${laneName}"
+bit snap -m "CI"
+bit export
+
+# Build the comment body
+commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}"
+
+# Post the comment to the MR
+echo "Posting the lane link to the MR..."
+curl --request POST \
+     --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+     --header "Content-Type: application/json" \
+     --data "{ \"body\": \"$commentBody\" }" \
+     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_ID/notes"

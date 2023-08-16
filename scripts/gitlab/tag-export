@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Ensure required environment variables are set
+if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
+    echo "Error: GITLAB_ACCESS_TOKEN environment variable is required."
+    exit 1
+fi
+
+# Check if CI_PROJECT_ID is set
+if [[ -z "$CI_PROJECT_ID" ]]; then
+    echo "Error: Run this task in gitlab"
+    exit 1
+fi
+
+# Function to retrieve the MR ID from the latest commit
+get_mr_id_from_last_commit() {
+  local commit_sha
+  commit_sha=$(git rev-parse HEAD)
+  response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/commits/$commit_sha/merge_requests")
+
+  echo "$response" | grep -oP '"id":[0-9]+' | head -1 | grep -oP '[0-9]+'
+}
+
+# Function to get version keyword
+get_version_keyword() {
+  local text="$1"
+  keywords=("patch" "major" "minor" "pre-release")
+
+  for keyword in "${keywords[@]}"; do
+    if [[ "$text" == *"$keyword"* ]]; then
+      echo "$keyword"
+      return
+    fi
+  done
+
+  echo ""
+}
+
+# Function to fetch version from the latest commit or PR
+fetch_version_from_latest_commit_pr() {
+  local MR_ID
+  MR_ID=$(get_mr_id_from_last_commit)
+
+  if [[ -z "$MR_ID" ]]; then
+    echo "No merge request found for the commit SHA."
+    exit 0
+  fi
+  
+  # Use GitLab API to get the MR details
+  MR_DETAILS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_ID")
+  
+  # Extract the title and labels from the MR using grep and awk
+  MR_TITLE=$(echo "$MR_DETAILS" | grep -oP '(?<="title":")[^"]*')
+  MR_LABELS=$(echo "$MR_DETAILS" | grep -oP '(?<="labels":\[)[^\]]*' | awk -F',' '{for(i=1;i<=NF;i++) print $i}' | tr -d '"')
+
+  # Check labels first
+  for label in $MR_LABELS; do
+    version=$(get_version_keyword "$label")
+    if [[ ! -z "$version" ]]; then
+      echo "$version"
+      return
+    fi
+  done
+
+  # Check MR title next
+  version=$(get_version_keyword "$MR_TITLE")
+  if [[ ! -z "$version" ]]; then
+    echo "$version"
+    return
+  fi
+
+  # Last fallback: check the commit message
+  COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+  echo $(get_version_keyword "$COMMIT_MESSAGE")
+}
+
+# Main script execution
+version=$(fetch_version_from_latest_commit_pr)
+command="bit tag -m 'CI'"
+
+if [[ ! -z "$version" ]]; then
+  command+=" --$version"
+fi
+
+$command
+bit export

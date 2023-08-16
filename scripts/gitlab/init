@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Check if BIT_CONFIG_USER_TOKEN is not set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    echo "Error: BIT_CONFIG_USER_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Extract the "engine" version
+engine_version=$(grep '"engine":' workspace.jsonc | awk -F'"' '{print $4}')
+
+# Check for "engineStrict": true
+engine_strict=$(grep '"engineStrict": true' workspace.jsonc)
+
+# If the engine_version exists and is not empty and engineStrict is true
+if [[ ! -z "$engine_version" && ! -z "$engine_strict" ]]; then
+    echo "Engine version found: $engine_version with strict mode enabled"
+    bvm install "$engine_version"
+fi
+
+# Extract the defaultScope value from workspace.jsonc
+defaultScope=$(grep -oP '"defaultScope": "\K[^"]+' workspace.jsonc)
+
+# Split the defaultScope value into ORG and SCOPE using '.' as a delimiter
+ORG=$(echo $defaultScope | cut -d'.' -f1)
+SCOPE=$(echo $defaultScope | cut -d'.' -f2)
+
+# Export ORG and SCOPE values
+export ORG
+export SCOPE
+
+# Print ORG and SCOPE values
+echo "ORG: $ORG"
+echo "SCOPE: $SCOPE"
