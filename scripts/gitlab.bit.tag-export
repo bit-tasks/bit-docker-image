@@ -24,10 +24,14 @@ get_mr_id_from_last_commit() {
 # Function to get version keyword
 get_version_keyword() {
   local text="$1"
-  keywords=("patch" "major" "minor" "pre-release")
+  local fullMatch="$2"
+  local keywords=("patch" "major" "minor" "pre-release")
 
   for keyword in "${keywords[@]}"; do
-    if [[ "$text" == *"$keyword"* ]]; then
+    if [[ "$fullMatch" == "true" && "$text" == "$keyword" ]]; then
+      echo "$keyword"
+      return
+    elif [[ "$fullMatch" != "true" && "$text" == *"[${keyword}]"* ]]; then
       echo "$keyword"
       return
     fi
@@ -55,7 +59,7 @@ fetch_version_from_latest_commit_pr() {
 
   # Check labels first
   for label in $MR_LABELS; do
-    version=$(get_version_keyword "$label")
+    version=$(get_version_keyword "$label" true)
     if [[ ! -z "$version" ]]; then
       echo "$version"
       return
