@@ -20,10 +20,10 @@ while [ $(date +%s) -lt $end_time ]; do
   elapsed_time=$(( $(date +%s) - start_time ))
 
   if curl --output /dev/null --silent --head "$url"; then
-    echo "Server is up (total elapsed time: $elapsed_time $(seconds_text $elapsed_time)), $url"
+    echo -e "\rServer is up (total elapsed time: $elapsed_time $(seconds_text $elapsed_time)), $url                                    "
     exit 0
   else
-    echo "Server is not yet up (waiting time: $elapsed_time $(seconds_text $elapsed_time)), sleeping for $frequency $(seconds_text $frequency)..."
+    echo -ne "\rServer is not yet up (waiting time: $elapsed_time $(seconds_text $elapsed_time)), sleeping for $frequency $(seconds_text $frequency)...    "
     sleep $frequency
   fi
 done
