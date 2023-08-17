@@ -11,6 +11,7 @@ if [[ -z "$gitUserName" || -z "$gitUserEmail" ]]; then
 fi
 
 # Setting git configuration
+git config --global --add safe.directory /builds/bit-tasks/ci
 git config --global user.name "${gitUserName}"
 git config --global user.email "${gitUserEmail}"
 
@@ -21,7 +22,7 @@ commitMessage="update .bitmap and pnpm-lock.yaml with new component and dependen
 
 # Check if --skip-ci is passed as an argument
 if [[ "$@" == *" --skip-ci "* ]]; then
-    commitMessage+=" [skip-ci]"
+    commitMessage+=" [skip ci]"
 fi
 
 git commit -m "$commitMessage"
@@ -30,5 +31,5 @@ git commit -m "$commitMessage"
 if [[ "$@" == *" --skip-push "* ]]; then
     echo "Skipping git push"
 else
-    git push
+    git push origin HEAD:$CI_COMMIT_REF_NAME
 fi
