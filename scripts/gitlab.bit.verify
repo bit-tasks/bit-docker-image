@@ -3,7 +3,7 @@
 bit status --strict
 
 # Check if --skip-ci is passed as an argument
-if [[ " $@ " == *" --skip-build "* ]]; then
+if [[ " $@ " == *"--skip-build"* ]]; then
     echo "Skipping bit build"
 else
     bit build

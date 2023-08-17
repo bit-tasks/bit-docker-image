@@ -21,14 +21,14 @@ git add .bitmap pnpm-lock.yaml
 commitMessage="update .bitmap and pnpm-lock.yaml with new component and dependency versions (automated)"
 
 # Check if --skip-ci is passed as an argument
-if [[ "$@" == *" --skip-ci "* ]]; then
+if [[ "$@" == *"--skip-ci"* ]]; then
     commitMessage+=" [skip ci]"
 fi
 
 git commit -m "$commitMessage"
 
 # Check if --skip-push is passed as an argument
-if [[ "$@" == *" --skip-push "* ]]; then
+if [[ "$@" == *"--skip-push"* ]]; then
     echo "Skipping git push"
 else
     git push origin HEAD:$CI_COMMIT_REF_NAME
