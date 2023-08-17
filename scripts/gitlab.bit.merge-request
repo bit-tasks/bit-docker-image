@@ -21,6 +21,20 @@ fi
 # Get laneName from environment variable
 prNumber="$CI_MERGE_REQUEST_ID"
 laneName="pr-${prNumber}"
+commentBody=""
+
+ local statusRaw=$(bit status --json)
+
+# Extract counts using grep and awk
+local newComponentsCount=$(echo "$statusRaw" | grep -Eo '"newComponents":\[[^]]+\]' | awk -F: '{print $2}' | awk -F, '{print NF}')
+local modifiedComponentsCount=$(echo "$statusRaw" | grep -Eo '"modifiedComponents":\[[^]]+\]' | awk -F: '{print $2}' | awk -F, '{print NF}')
+
+# If the arrays are empty, the above commands will output the full array string instead of the count. Check for that.
+[[ "$newComponentsCount" == "[]" ]] && newComponentsCount=0
+[[ "$modifiedComponentsCount" == "[]" ]] && modifiedComponentsCount=0
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+   
 
 # Build the lane link
 laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
@@ -36,6 +50,9 @@ bit export
 
 # Build the comment body
 commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}"
+else
+commentBody="No component was added or modified in the pull request!"
+fi
 
 # Post the comment to the MR
 echo "Posting the lane link to the MR..."
