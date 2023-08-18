@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load variables from Gitlab ws.env artifact
+source ws.env
+
 # Reading values from environment variables
 gitUserName="$GIT_USER_NAME"
 gitUserEmail="$GIT_USER_EMAIL"

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load variables from Gitlab ws.env artifact
+source ws.env
+
 bit status --strict
 
 # Check if --skip-ci is passed as an argument
