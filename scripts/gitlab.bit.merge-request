@@ -1,68 +1,43 @@
 #!/bin/bash
-set -e  # Exit on any error
 
-# Check if GITLAB_ACCESS_TOKEN is set
+# Ensure required environment variables are set
 if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
     echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
     exit 1
 fi
 
-# Check if CI_PROJECT_ID is set
-if [[ -z "$CI_PROJECT_ID" ]]; then
-    echo "Error: Run this task in gitlab"
+if [[ -z "$CI_PROJECT_ID" || -z "$CI_MERGE_REQUEST_IID" ]]; then
+    echo "Error: Ensure this task is triggered by a GitLab merge request"
     exit 1
 fi
 
-# Check if CI_MERGE_REQUEST_ID is set
-if [[ -z "$CI_MERGE_REQUEST_ID" ]]; then
-    echo "Error: Run this task as a merge request trigger"
-    exit 1
-fi
-
-# Ensure that ORG and SCOPE are set
-if [[ -z "$ORG" ]] || [[ -z "$SCOPE" ]]; then
-    echo "Error: ORG and SCOPE must be set"
-    exit 1
-fi
-
-# Get laneName from environment variable
-prNumber="$CI_MERGE_REQUEST_ID"
-laneName="pr-${prNumber}"
-commentBody=""
-
+# Determine if there are any new or modified components
 statusRaw=$(bit status --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 
-# Extract counts using grep and awk
-newComponentsCount=$(echo "$statusRaw" | grep -Eo '"newComponents":\[[^]]+\]' | awk -F: '{print $2}' | awk -F, '{print NF}')
-modifiedComponentsCount=$(echo "$statusRaw" | grep -Eo '"modifiedComponents":\[[^]]+\]' | awk -F: '{print $2}' | awk -F, '{print NF}')
-
-# If the arrays are empty, the above commands will output the full array string instead of the count. Check for that.
-[[ "$newComponentsCount" == "[]" ]] && newComponentsCount=0
-[[ "$modifiedComponentsCount" == "[]" ]] && modifiedComponentsCount=0
-
+laneName="pr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
-    # Build the lane link
     laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+  
+    # Operations on bit lane
+    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || \
+    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
 
-    # Remove the bit lane
-    bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || echo "Error while removing bit lane. Lane may not exist."
-
-    # The rest of the commands
     bit status --strict
     bit lane create "${laneName}"
     bit snap -m "CI"
     bit export
 
-    # Build the comment body
+    # Construct merge request comment
     commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}"
 else
     commentBody="No component was added or modified in the pull request!"
 fi
 
-# Post the comment to the MR
-echo "Posting the lane link to the MR..."
+# Post the comment to the merge request
 curl --request POST \
      --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
      --header "Content-Type: application/json" \
      --data '{ "body": "'"$commentBody"'" }' \
-     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_ID/notes"
+     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
