@@ -22,6 +22,7 @@ RUN apt-get update \
         libxrandr2 \
         libcups2 \
         zstd \
+        jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a new user "bituser" and switch to it
