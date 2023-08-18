@@ -94,6 +94,37 @@ build-job:
       echo "bit version: $(bit -v)"
 ```
 
+An addition to the pre-installed latest docker version, there are dedicated scripts supporting GitLab in the docker image.
+- `gitlab.bit.init`
+- `gitlab.bit.verify`
+- `gitlab.bit.commit-bitmap`
+- `gitlab.bit.merge-request`
+- `gitlab.bit.tag-export`
+
+You can use them as follows in your GitLab pipeline e.g:
+
+```
+GitLab CI/CD Using Scripts
+
+# @file .gitlab-ci.yml
+
+image: bitsrc/nightly:latest
+
+variables:
+  BIT_CONFIG_USER_TOKEN: "bit_user_token"
+  GIT_USER_NAME: “git_user_name”
+  GIT_USER_EMAIL: “git”_user_email
+
+build-job:
+  stage: build
+  script: 
+    - |      
+      gitlab.bit.init
+      gitlab.bit.verify
+  rules:
+     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+```
+
 ## Utility Scripts
 There is a collection of bit utility scripts available in the container.
 
