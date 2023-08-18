@@ -6,6 +6,7 @@ ENV SHELL=/bin/bash
 # Install system packages needed for Bit development server
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        jq \
         libasound2 \
         libatk1.0-0 \
         libatk-bridge2.0-0 \
@@ -22,7 +23,6 @@ RUN apt-get update \
         libxrandr2 \
         libcups2 \
         zstd \
-        jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a new user "bituser" and switch to it
