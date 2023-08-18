@@ -29,8 +29,8 @@ SCOPE=$(echo $defaultScope | cut -d'.' -f2)
 export ORG
 export SCOPE
 
-# Set ORG and SCOPE values in the Gitlab ws.env artifact to share across scripts
-echo "ORG=$ORG" > ws.env
-echo "SCOPE=$SCOPE" >> ws.env
+# Save ORG and SCOPE values to a temp file to share across scripts
+echo "ORG=$ORG" > /tmp/ws.env
+echo "SCOPE=$SCOPE" >> /tmp/ws.env
 
 bit install

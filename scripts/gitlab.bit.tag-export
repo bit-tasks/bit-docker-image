@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Load variables from Gitlab ws.env artifact
-source ws.env
+# Load variables from ws.env file
+source /tmp/ws.env
 
 # Ensure required environment variables are set
 if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
