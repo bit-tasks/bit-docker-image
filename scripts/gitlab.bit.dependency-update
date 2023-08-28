@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Load variables from ws.env file
+source /tmp/ws.env
+
+# Helper function to check if a value exists in an array.
+contains() {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
+# Ensure required environment variables are set
+if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
+    echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Check if both variables are set
+if [[ -z "$gitUserName" || -z "$gitUserEmail" ]]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+allow="all"
+branch="main"
+branchName="bit-dependency-update";
+commitMessage="Update Bit envs and outdated (direct) external dependencies, as well as the workspace components using them.";
+mrTitle="Update bit dependencies";
+mrBody="This PR updates the bit dependencies.";
+
+# Extract the parameters
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        --allow)
+        allow="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --branch)
+        branch="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        *)
+        # Unknown option
+        shift # past argument
+        ;;
+    esac
+done
+
+echo "Allow: $allow"
+echo "Branch: $branch"
+
+# Convert the comma-separated string into an array.
+IFS=',' read -ra allowArray <<< "$allow"
+
+if contains "all" "${allowArray[@]}" || contains "workspace-components" "${allowArray[@]}"; then
+    bit checkout head --all
+fi
+
+if contains "all" "${allowArray[@]}" || contains "envs" "${allowArray[@]}"; then
+    bit envs update
+fi
+
+if contains "all" "${allowArray[@]}" || contains "external-dependencies" "${allowArray[@]}"; then
+    bit update -y
+fi
+
+# Check git status
+statusOutput=$(git status --porcelain)
+
+# If there's any change
+if [ -n "$statusOutput" ]; then
+    # Setting git configuration
+    git config --global --add safe.directory /builds/bit-tasks/ci
+    git config --global user.name "${gitUserName}"
+    git config --global user.email "${gitUserEmail}"
+   
+    git checkout -b "${branchName}"
+    git add .
+    git commit -m "${commitMessage}"
+    git push origin "${branchName}" --force
+
+    # Create a merge request using GitLab API with curl
+    MR_RESPONSE=$(curl --request POST \
+                        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+                        --header "Content-Type: application/json" \
+                        --data '{
+                            "id": "'"$CI_PROJECT_ID"'",
+                            "source_branch": "'"$branchName"'",
+                            "target_branch": "'"$branch"'",
+                            "title": "'"$mrTitle"'",
+                            "description": "'"$mrBody"'"
+                        }' \
+                        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests")
+
+    MR_WEB_URL=$(echo "$MR_RESPONSE" | jq -r '.web_url')
+
+    # Check if MR was created successfully
+    if [ "$MR_WEB_URL" != "null" ]; then
+        echo "Merge request created successfully: $MR_WEB_URL"
+    else
+        ERROR_MESSAGE=$(echo "$MR_RESPONSE" | jq -r '.message')
+        echo "Error creating merge request: $ERROR_MESSAGE"
+        exit 1
+    fi
+fi
