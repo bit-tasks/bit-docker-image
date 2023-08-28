@@ -19,7 +19,7 @@ statusRaw=$(bit status --json)
 newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
 modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 
-laneName="pr-$CI_MERGE_REQUEST_IID"
+laneName="mr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
   
