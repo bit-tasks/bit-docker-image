@@ -4,7 +4,7 @@
 source /tmp/ws.env
 
 if [[ -z "$CI_PROJECT_ID" || -z "$CI_COMMIT_REF_NAME" ]]; then
-    echo "Error: Ensure this task is triggered by a GitLab merge request"
+    echo "Error: Ensure this task is triggered when creating a new branch"
     exit 1
 fi
 
