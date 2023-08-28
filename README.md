@@ -100,6 +100,7 @@ An addition to the pre-installed latest docker version, there are dedicated scri
 - `gitlab.bit.commit-bitmap`
 - `gitlab.bit.merge-request`
 - `gitlab.bit.tag-export`
+- `gitlab.bit.branch-lane`
 
 You can use them as follows in your GitLab pipeline e.g:
 
