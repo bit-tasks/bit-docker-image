@@ -3,12 +3,6 @@
 # Load variables from ws.env file
 source /tmp/ws.env
 
-# Ensure required environment variables are set
-if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
-    echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
-    exit 1
-fi
-
 if [[ -z "$CI_PROJECT_ID" || -z "$CI_COMMIT_REF_NAME" ]]; then
     echo "Error: Ensure this task is triggered by a GitLab merge request"
     exit 1
