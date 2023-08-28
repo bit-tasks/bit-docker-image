@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Load variables from ws.env file
+source /tmp/ws.env
+
+# Ensure required environment variables are set
+if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
+    echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
+    exit 1
+fi
+
+if [[ -z "$CI_PROJECT_ID" || -z "$CI_COMMIT_REF_NAME" ]]; then
+    echo "Error: Ensure this task is triggered by a GitLab merge request"
+    exit 1
+fi
+
+# Determine if there are any new or modified components
+statusRaw=$(bit status --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+
+laneName="$CI_COMMIT_REF_NAME"
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+    laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+  
+    # Operations on bit lane
+    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || \
+    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
+
+    bit status --strict
+    bit lane create "${laneName}"
+    bit snap -m "CI"
+    bit export
+fi
