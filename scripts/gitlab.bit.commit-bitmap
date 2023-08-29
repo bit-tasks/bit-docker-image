@@ -14,7 +14,7 @@ if [[ -z "$gitUserName" || -z "$gitUserEmail" ]]; then
 fi
 
 # Setting git configuration
-git config --global --add safe.directory /builds/bit-tasks/ci
+git config --global --add safe.directory "${CI_PROJECT_DIR}"
 git config --global user.name "${gitUserName}"
 git config --global user.email "${gitUserEmail}"
 
