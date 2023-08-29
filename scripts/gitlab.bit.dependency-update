@@ -89,7 +89,7 @@ if [ -n "$statusOutput" ]; then
     git add .
     git commit -m "${commitMessage}"
 
-    REPO_URL="https://${GITLAB_ACCESS_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
+    REPO_URL="https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
     git push "${REPO_URL}" "${branchName}" --force
 
     # Create a merge request using GitLab API with curl
