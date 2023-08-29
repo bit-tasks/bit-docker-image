@@ -22,6 +22,9 @@ if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
     exit 1
 fi
 
+# Setting git configuration
+git config --global --add safe.directory /builds/bit-tasks/ci
+
 allow="all"
 branch="main"
 branchName="bit-dependency-update";
@@ -74,8 +77,8 @@ statusOutput=$(git status --porcelain)
 
 # If there's any change
 if [ -n "$statusOutput" ]; then
+    echo "Found modified components or dependencies"
     # Setting git configuration
-    git config --global --add safe.directory /builds/bit-tasks/ci
     git config --global user.name "${GIT_USER_NAME}"
     git config --global user.email "${GIT_USER_EMAIL}"
    
