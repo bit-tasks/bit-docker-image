@@ -94,7 +94,7 @@ if [ -n "$statusOutput" ]; then
 
     # Create a merge request using GitLab API with curl
     MR_RESPONSE=$(curl --request POST \
-                        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+                        --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
                         --header "Content-Type: application/json" \
                         --data '{
                             "id": "'"$CI_PROJECT_ID"'",
