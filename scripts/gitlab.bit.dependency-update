@@ -17,7 +17,7 @@ if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
 fi
 
 # Check if both variables are set
-if [[ -z "$gitUserName" || -z "$gitUserEmail" ]]; then
+if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
     echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
     exit 1
 fi
@@ -76,8 +76,8 @@ statusOutput=$(git status --porcelain)
 if [ -n "$statusOutput" ]; then
     # Setting git configuration
     git config --global --add safe.directory /builds/bit-tasks/ci
-    git config --global user.name "${gitUserName}"
-    git config --global user.email "${gitUserEmail}"
+    git config --global user.name "${GIT_USER_NAME}"
+    git config --global user.email "${GIT_USER_EMAIL}"
    
     git checkout -b "${branchName}"
     git add .
