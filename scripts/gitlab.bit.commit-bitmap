@@ -3,10 +3,6 @@
 # Load variables from ws.env file
 source /tmp/ws.env
 
-# Reading values from environment variables
-gitUserName="$GIT_USER_NAME"
-gitUserEmail="$GIT_USER_EMAIL"
-
 # Check if both variables are set
 if [[ -z "$gitUserName" || -z "$gitUserEmail" ]]; then
     echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
@@ -15,8 +11,8 @@ fi
 
 # Setting git configuration
 git config --global --add safe.directory "${CI_PROJECT_DIR}"
-git config --global user.name "${gitUserName}"
-git config --global user.email "${gitUserEmail}"
+git config --global user.name "${GIT_USER_NAME}"
+git config --global user.email "${GIT_USER_EMAIL}"
 
 git add .bitmap pnpm-lock.yaml
 
