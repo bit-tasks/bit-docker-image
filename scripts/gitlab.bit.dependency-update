@@ -31,9 +31,9 @@ git config --global --add safe.directory "${CI_PROJECT_DIR}"
 allow="all"
 branch="main"
 branchName="bit-dependency-update";
-commitMessage="Update Bit envs and outdated (direct) external dependencies, as well as the workspace components using them.";
+commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameters.";
 mrTitle="Update bit dependencies";
-mrBody="This PR updates the bit dependencies.";
+mrBody="This MR updates the bit dependencies.";
 
 # Extract the parameters
 while [[ $# -gt 0 ]]; do
@@ -65,14 +65,17 @@ IFS=',' read -ra allowArray <<< "$allow"
 
 if contains "all" "${allowArray[@]}" || contains "workspace-components" "${allowArray[@]}"; then
     bit checkout head --all
+    echo "updating workspace-components"
 fi
 
 if contains "all" "${allowArray[@]}" || contains "envs" "${allowArray[@]}"; then
     bit envs update
+    echo "updating env-components"
 fi
 
 if contains "all" "${allowArray[@]}" || contains "external-dependencies" "${allowArray[@]}"; then
     bit update -y
+    echo "updating external dependencies"
 fi
 
 # Check git status
