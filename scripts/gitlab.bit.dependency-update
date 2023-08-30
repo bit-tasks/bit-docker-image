@@ -31,7 +31,7 @@ git config --global --add safe.directory "${CI_PROJECT_DIR}"
 allow="all"
 branch="main"
 branchName="bit-dependency-update";
-commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameters.";
+commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow";
 mrTitle="Update bit dependencies";
 mrBody="This MR updates the bit dependencies.";
 
