@@ -7,8 +7,8 @@ source /tmp/ws.env
 git config --global --add safe.directory /builds/bit-tasks/ci
 
 # Check environment variable for GitLab token
-if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
-    echo "Error: GITLAB_ACCESS_TOKEN environment variable is required."
+if [[ -z "$GITLAB_TOKEN" ]]; then
+    echo "Error: GITLAB_TOKEN environment variable is required."
     exit 1
 fi
 
@@ -20,7 +20,7 @@ fi
 
 # Retrieve the MR ID from the latest commit
 commit_sha=$(git rev-parse HEAD)
-response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/commits/$commit_sha/merge_requests")
+response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/commits/$commit_sha/merge_requests")
 
 # Check the API call for MR retrieval
 if [[ $? -ne 0 ]]; then
@@ -39,7 +39,7 @@ keywords=("patch" "major" "minor" "pre-release")
 version="Unknown"
 
 if [[ -n "$MR_ID" ]]; then
-    MR_DETAILS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_ID")
+    MR_DETAILS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_ID")
     
     MR_TITLE=$(echo "$MR_DETAILS" | jq -r '.title')
     MR_LABELS=$(echo "$MR_DETAILS" | jq -r '.labels[]')

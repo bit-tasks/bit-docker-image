@@ -4,8 +4,8 @@
 source /tmp/ws.env
 
 # Ensure required environment variables are set
-if [[ -z "$GITLAB_ACCESS_TOKEN" ]]; then
-    echo "Error: GITLAB_ACCESS_TOKEN environment variable is not set"
+if [[ -z "$GITLAB_TOKEN" ]]; then
+    echo "Error: GITLAB_TOKEN environment variable is not set"
     exit 1
 fi
 
@@ -40,7 +40,7 @@ fi
 
 # Post the comment to the merge request
 curl --request POST \
-     --header "PRIVATE-TOKEN: $GITLAB_ACCESS_TOKEN" \
+     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
      --header "Content-Type: application/json" \
      --data '{ "body": "'"$commentBody"'" }' \
      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
