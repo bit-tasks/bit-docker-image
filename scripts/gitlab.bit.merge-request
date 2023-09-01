@@ -22,14 +22,13 @@ modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 laneName="mr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
-  
-    # Operations on bit lane
-    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
-    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
 
     bit status --strict
     bit lane create "${laneName}"
     bit snap -m "CI"
+    # Operations on bit lane
+    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
+    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
     bit export
 
     # Construct merge request comment
