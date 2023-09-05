@@ -1,6 +1,6 @@
 {
-  "name": "Bit Nightly",
-  "image": "bitsrc/nightly:latest",
+  "name": "Bit Stable",
+  "image": "bitsrc/stable:latest",
   "forwardPorts": [],
   "remoteUser": "bituser"
 }
