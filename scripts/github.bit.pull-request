@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Ensure required environment variables are set
+if [[ -z "$GITHUB_TOKEN" ]]; then
+    echo "Error: GITHUB_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Ensure the event is a pull request
+if [[ -z "$GITHUB_EVENT_NAME" || "$GITHUB_EVENT_NAME" != "pull_request" ]]; then
+    echo "Error: Ensure this action is triggered by a GitHub pull request"
+    exit 1
+fi
+
+# Get the pull request number from the GitHub context
+PR_NUMBER=$(jq --raw-output .number "$GITHUB_EVENT_PATH")
+
+# Determine if there are any new or modified components
+statusRaw=$(bit status --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+
+laneName="pr-$PR_NUMBER"
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+
+    bit status --strict
+    bit lane create "${laneName}"
+    bit snap -m "CI"
+    # Operations on bit lane
+    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
+    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
+    bit export
+
+    # Fetch existing comments from the pull request using GitHub API
+    existingComments=$(curl --header "Authorization: token $GITHUB_TOKEN" \
+                            "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments")
+
+    # Search for a comment containing the link
+    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("https://bit.dev")) | .id')
+
+    getHumanReadableTimestamp() {
+        date -u +"%B %d, %Y, %I:%M:%S %p UTC"
+    }
+
+    currentTime=$(getHumanReadableTimestamp)
+    if [[ ! -z "$commentID" ]]; then
+        # If such a comment is found, update it
+        commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}\n\n_Lane updated: ${currentTime}_"
+        curl --request PATCH \
+             --header "Authorization: token $GITHUB_TOKEN" \
+             --header "Content-Type: application/json" \
+             --data '{ "body": "'"$commentBody"'" }' \
+             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/comments/$commentID"
+        echo "Updated existing comment."
+    else
+        # If no such comment is found, post a new comment
+        commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}\n\n_Lane created: ${currentTime}_"
+        curl --request POST \
+             --header "Authorization: token $GITHUB_TOKEN" \
+             --header "Content-Type: application/json" \
+             --data '{ "body": "'"$commentBody"'" }' \
+             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
+        echo "Posted a new comment."
+    fi
+fi
