@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Extract branch name from GITHUB_REF. Format of GITHUB_REF is refs/heads/<branch_name>
+BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+if [[ -z "${GITHUB_REPOSITORY}" || -z "$BRANCH_NAME" ]]; then
+    echo "Error: Ensure this task is triggered when creating a new branch"
+    exit 1
+fi
+
+# Determine if there are any new or modified components
+statusRaw=$(bit status --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+
+laneName="$BRANCH_NAME"
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+  
+    # Operations on bit lane
+    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || \
+    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
+
+    bit status --strict
+    bit lane create "${laneName}"
+    bit snap -m "CI"
+    bit export
+fi
