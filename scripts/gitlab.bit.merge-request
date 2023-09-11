@@ -21,7 +21,7 @@ modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 
 laneName="mr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
-    laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 
     bit status --strict
     bit lane create "${laneName}"
@@ -31,15 +31,35 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
     bit export
 
-    # Construct merge request comment
-    commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}"
-else
-    commentBody="No component was added or modified in the pull request!"
-fi
+    # Fetch existing comments from the merge request
+    existingComments=$(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+                            "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes")
 
-# Post the comment to the merge request
-curl --request POST \
-     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-     --header "Content-Type: application/json" \
-     --data '{ "body": "'"$commentBody"'" }' \
-     "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
+    # Search for a comment containing the link and posted by GitLab bot
+    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("https://bit.dev") and .author.username == "gitlab-bot") | .id')
+
+    getHumanReadableTimestamp() {
+        date -u +"%B %d, %Y, %I:%M:%S %p UTC"
+    }
+
+    currentTime=$(getHumanReadableTimestamp)
+    if [[ ! -z "$commentID" ]]; then
+        # If such a comment is found, update it
+        commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}\n\n_Lane updated: ${currentTime}_"
+        curl --request PUT \
+             --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+             --header "Content-Type: application/json" \
+             --data '{ "body": "'"$commentBody"'" }' \
+             "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes/$commentID"
+        echo "Updated existing comment."
+    else
+        # If no such comment is found, post a new comment
+        commentBody="⚠️ Please review the changes in the Bit lane: ${laneLink}\n\n_Lane created: ${currentTime}_"
+        curl --request POST \
+             --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+             --header "Content-Type: application/json" \
+             --data '{ "body": "'"$commentBody"'" }' \
+             "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
+        echo "Posted a new comment."
+    fi
+fi
