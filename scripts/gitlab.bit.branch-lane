@@ -16,7 +16,7 @@ modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 laneName="$CI_COMMIT_REF_NAME"
 
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
-    laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
   
     # Operations on bit lane
     timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent || \
