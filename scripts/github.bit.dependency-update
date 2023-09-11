@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Disable git terminal prompt to prevent the script from getting stuck waiting for input
+export GIT_TERMINAL_PROMPT=0
+
+# Helper function to check if a value exists in an array.
+contains() {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
+# Ensure required environment variables are set
+if [[ -z "$GITHUB_TOKEN" ]]; then
+    echo "Error: GITHUB_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Check if both variables are set
+if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+allow="all"
+branch="main"
+branchName="bit-dependency-update";
+commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow";
+prTitle="Update bit dependencies";
+prBody="This PR updates the bit dependencies.";
+
+# Extract the parameters
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        --allow)
+        allow="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --branch)
+        branch="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        *)
+        # Unknown option
+        shift # past argument
+        ;;
+    esac
+done
+
+echo "Allow: $allow"
+echo "Branch: $branch"
+
+# Convert the comma-separated string into an array.
+IFS=',' read -ra allowArray <<< "$allow"
+
+# ... [No changes to the bit commands]
+
+# Check git status
+statusOutput=$(git status --porcelain)
+
+# If there's any change
+if [ -n "$statusOutput" ]; then
+    echo "Found modified components or dependencies"
+    # Setting git configuration
+    git config --global user.name "${GIT_USER_NAME}"
+    git config --global user.email "${GIT_USER_EMAIL}"
+   
+    git checkout -b "${branchName}"
+    git add .
+    git commit -m "${commitMessage}"
+
+    REPO_URL="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+    git push "${REPO_URL}" "${branchName}" --force
+
+    # Create a pull request using GitHub API with curl
+    PR_RESPONSE=$(curl --request POST \
+                        --header "Authorization: token ${GITHUB_TOKEN}" \
+                        --header "Content-Type: application/json" \
+                        --data '{
+                            "head": "'"$branchName"'",
+                            "base": "'"$branch"'",
+                            "title": "'"$prTitle"'",
+                            "body": "'"$prBody"'"
+                        }' \
+                        "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls")
+
+    PR_HTML_URL=$(echo "$PR_RESPONSE" | jq -r '.html_url')
+
+    # Check if PR was created successfully
+    if [ "$PR_HTML_URL" != "null" ]; then
+        echo "Pull request created successfully: $PR_HTML_URL"
+    else
+        ERROR_MESSAGE=$(echo "$PR_RESPONSE" | jq -r '.message')
+        echo "Error creating pull request: $ERROR_MESSAGE"
+        exit 1
+    fi
+fi
