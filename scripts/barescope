@@ -9,12 +9,9 @@ port=$(( seed % (10000 - 4000 + 1) + 4000 ))
 
 currentdir=$(pwd)
 
-# Create the directory for the bare scope
-mkdir "$name"
-cd "$name"
-
 # Initialize the bare scope
-bit init --bare
+bit init $name --bare
+cd "$name"
 
 # Start the Bit server and wait for it to be up
 bit start --port "$port" --no-browser &
