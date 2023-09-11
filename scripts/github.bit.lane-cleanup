@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+    echo "Error: Ensure this task is triggered by a GitHub pull request"
+    exit 1
+fi
+
+laneName="mr-${{ github.event.pull_request.number }}"
+laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
+echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
