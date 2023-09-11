@@ -9,6 +9,6 @@ if [[ -z "$CI_PROJECT_ID" || -z "$CI_MERGE_REQUEST_IID" ]]; then
 fi
 
 laneName="mr-$CI_MERGE_REQUEST_IID"
-laneLink="https://new.bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
 echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
