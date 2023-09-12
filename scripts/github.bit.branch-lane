@@ -24,6 +24,6 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
 
     bit status --strict
     bit lane create "${laneName}"
-    bit snap -m "CI"
+    bit snap -m "CI" --build
     bit export
 fi
