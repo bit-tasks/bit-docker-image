@@ -74,7 +74,7 @@ fi
 # Display the determined version
 echo "Determined Version: $version"
 
-command="bit tag -m 'CI'"
+command="bit tag -m 'CI' --build"
 
 if [[ "$version" != "Unknown" ]]; then
   command+=" --$version"
