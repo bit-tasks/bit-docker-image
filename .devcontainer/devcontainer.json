@@ -4,10 +4,10 @@
   "forwardPorts": [],
   "remoteUser": "bituser",
   "customizations": {
-		"vscode": {
-			"extensions": [
-				"bit.vscode-bit@prerelease"
-			]
-		}
-	}
+    "vscode": {
+      "extensions": [
+        "bit.vscode-bit@prerelease"
+      ]
+    }
+  }
 }
