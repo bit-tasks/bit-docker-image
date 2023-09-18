@@ -3,11 +3,9 @@
   "image": "bitsrc/stable:latest",
   "forwardPorts": [],
   "remoteUser": "bituser",
-  "settings": {
-    "machine": {
-      "cpu": 4,
-      "memory": "16GB"
-    }
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
   },
   "customizations": {
     "vscode": {
