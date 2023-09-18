@@ -3,6 +3,9 @@
   "image": "bitsrc/stable:latest",
   "forwardPorts": [],
   "remoteUser": "bituser",
+  "settings": {
+    "defaultMachine": "standard_d2s_v3" // Set to a 4GB memory instance type
+  },
   "customizations": {
     "vscode": {
       "extensions": [
