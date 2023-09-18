@@ -4,7 +4,10 @@
   "forwardPorts": [],
   "remoteUser": "bituser",
   "settings": {
-    "defaultMachine": "standard_d2s_v3" // Set to a 4GB memory instance type
+    "machine": {
+      "cpu": 4,
+      "memory": "16GB"
+    }
   },
   "customizations": {
     "vscode": {
