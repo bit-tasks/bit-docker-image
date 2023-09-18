@@ -9,5 +9,6 @@
         "bit.vscode-bit@prerelease"
       ]
     }
-  }
+  },
+  "postCreateCommand": "echo 'Skipping code checkout'"
 }
