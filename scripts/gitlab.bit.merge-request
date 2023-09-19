@@ -27,8 +27,7 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     bit lane create "${laneName}"
     bit snap -m "CI" --build
     # Operations on bit lane
-    timeout 1m bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force || \
-    echo "Warning: Unable to remove lane within 1 minute or lane might not exist."
+    bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
     bit export
 
     # Fetch existing comments from the merge request
