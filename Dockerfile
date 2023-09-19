@@ -64,7 +64,6 @@ ENV NODE_OPTIONS="--max-old-space-size=${NODE_HEAP_SIZE}"
 # Set the correct registry
 RUN npm config set '@bit:registry' https://node-registry.bit.cloud
 RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
-RUN bit config set registry node-registry.bit.cloud
 
 # Set the default bit configurations for docker
 ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
