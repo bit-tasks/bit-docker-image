@@ -37,7 +37,7 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
                             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments")
 
     # Search for a comment containing the link
-    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("https://bit.cloud")) | .id')
+    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("Please review the changes in the Bit lane: https://bit.cloud")) | .id')
 
     getHumanReadableTimestamp() {
         date -u +"%B %d, %Y, %I:%M:%S %p UTC"
