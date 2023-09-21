@@ -35,7 +35,7 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
                             "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes")
 
     # Search for a comment containing the link and posted by GitLab bot
-    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("https://bit.cloud") and .author.username == "gitlab-bot") | .id')
+    commentID=$(echo "$existingComments" | jq '.[] | select(.body | contains("Please review the changes in the Bit lane: https://bit.cloud")) | .id')
 
     getHumanReadableTimestamp() {
         date -u +"%B %d, %Y, %I:%M:%S %p UTC"
