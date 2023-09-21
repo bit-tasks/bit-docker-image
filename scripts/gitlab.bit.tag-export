@@ -3,8 +3,8 @@
 # Load variables from ws.env file
 source /tmp/ws.env
 
-# Configure git safe directory
-git config --global --add safe.directory /builds/bit-tasks/ci
+# Setting git configuration
+git config --global --add safe.directory "${CI_PROJECT_DIR}"
 
 # Check environment variable for GitLab token
 if [[ -z "$GITLAB_TOKEN" ]]; then
