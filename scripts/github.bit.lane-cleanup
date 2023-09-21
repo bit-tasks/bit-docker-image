@@ -5,5 +5,5 @@ if [[ -z "${{ github.event.pull_request.number }}" ]]; then
     exit 1
 fi
 
-laneName="mr-${{ github.event.pull_request.number }}"
+laneName="pr-${{ github.event.pull_request.number }}"
 bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
