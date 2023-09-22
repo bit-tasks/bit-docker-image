@@ -13,12 +13,9 @@ statusRaw=$(bit status --json)
 newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
 modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 
-laneName="$CI_COMMIT_REF_NAME"
-
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
-    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
-  
-    # Operations on bit lane
+    laneName="$CI_COMMIT_REF_NAME"
+    echo "https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
     bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
 
     bit status --strict
