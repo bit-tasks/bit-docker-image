@@ -3,15 +3,10 @@
   "image": "bitsrc/stable:latest",
   "forwardPorts": [],
   "remoteUser": "bituser",
-  "hostRequirements": {
-    "cpus": 4,
-    "memory": "16gb",
-    "storage": "32gb"
-  },
   "customizations": {
     "vscode": {
       "extensions": [
-        "bit.vscode-bit@prerelease"
+        "bit.vscode-bit@latest"
       ]
     }
   }
