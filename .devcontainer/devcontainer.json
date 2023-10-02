@@ -6,7 +6,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "bit.vscode-bit@latest"
+        "bit.vscode-bit@0.0.40"
       ]
     }
   }
