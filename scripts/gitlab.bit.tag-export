@@ -80,6 +80,10 @@ if [[ "$version" != "Unknown" ]]; then
   command+=" --$version"
 fi
 
+if [[ " $@ " == *"--persist"* ]]; then
+    command+=" --persist"
+fi
+
 # Run the Bit command
 echo "Executing: $command"
 $command
