@@ -62,6 +62,10 @@ if [[ "$version" != "Unknown" ]]; then
     command+=" --$version"
 fi
 
+if [[ " $@ " == *"--persist"* ]]; then
+    command+=" --persist"
+fi
+
 echo "Executing: $command"
 $command
 bit export
