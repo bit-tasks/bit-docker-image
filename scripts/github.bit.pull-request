@@ -16,16 +16,22 @@ fi
 PR_NUMBER=$(jq --raw-output .number "$GITHUB_EVENT_PATH")
 
 # Determine if there are any new or modified components
-statusRaw=$(bit status --json)
+statusRaw=$(bit status --strict --json)
 newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
 modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+componentsWithIssuesCount=$(echo "$statusRaw" | jq '.componentsWithIssues | length')
+
+# Check for components with issues
+if [ "$componentsWithIssuesCount" -gt 0 ]; then
+    echo "Error: There are components with issues"
+    exit 1
+fi
 
 laneName="pr-$PR_NUMBER"
 
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 
-    bit status --strict
     bit lane create "${laneName}"
     bit snap -m "CI" --build
     # Operations on bit lane
