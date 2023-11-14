@@ -23,7 +23,8 @@ componentsWithIssuesCount=$(echo "$statusRaw" | jq '.componentsWithIssues | leng
 
 # Check for components with issues
 if [ "$componentsWithIssuesCount" -gt 0 ]; then
-    echo "Error: There are components with issues"
+    echo "Error: Following components have issues"
+    echo $(echo "$statusRaw" | jq '.componentsWithIssues')
     exit 1
 fi
 
