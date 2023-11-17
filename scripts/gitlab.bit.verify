@@ -9,5 +9,5 @@ bit status --strict
 if [[ " $@ " == *"--skip-build"* ]]; then
     echo "Skipping bit build"
 else
-    bit build
+    bit build || exit 1
 fi
