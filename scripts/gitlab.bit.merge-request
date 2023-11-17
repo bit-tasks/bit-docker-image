@@ -27,7 +27,7 @@ if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     bit snap -m "CI" --build || exit 1
     # Operations on bit lane
     bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
-    bit export
+    bit export || exit 1
 
     # Fetch existing comments from the merge request
     existingComments=$(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
