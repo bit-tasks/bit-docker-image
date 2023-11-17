@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if any command fails
+set -e
+
 # Load variables from ws.env file
 source /tmp/ws.env
 
@@ -18,14 +21,6 @@ fi
 statusRaw=$(bit status --strict --json)
 newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
 modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
-componentsWithIssuesCount=$(echo "$statusRaw" | jq '.componentsWithIssues | length')
-
-# Check for components with issues
-if [ "$componentsWithIssuesCount" -gt 0 ]; then
-    echo "Error: Following components have issues"
-    echo $(echo "$statusRaw" | jq '.componentsWithIssues')
-    exit 1
-fi
 
 laneName="mr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
