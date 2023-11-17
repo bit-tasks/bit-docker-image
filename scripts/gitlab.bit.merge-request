@@ -23,8 +23,8 @@ laneName="mr-$CI_MERGE_REQUEST_IID"
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 
-    bit lane create "${laneName}" && \
-    bit snap -m "CI" --build && \
+    bit lane create "${laneName}" || exit 1
+    bit snap -m "CI" --build || exit 1
     # Operations on bit lane
     bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
     bit export
