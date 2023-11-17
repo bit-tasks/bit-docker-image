@@ -19,25 +19,17 @@ PR_NUMBER=$(jq --raw-output .number "$GITHUB_EVENT_PATH")
 statusRaw=$(bit status --strict --json)
 newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
 modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
-componentsWithIssuesCount=$(echo "$statusRaw" | jq '.componentsWithIssues | length')
-
-# Check for components with issues
-if [ "$componentsWithIssuesCount" -gt 0 ]; then
-    echo "Error: Following components have issues"
-    echo $(echo "$statusRaw" | jq '.componentsWithIssues')
-    exit 1
-fi
 
 laneName="pr-$PR_NUMBER"
 
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
     laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 
-    bit lane create "${laneName}" && \
-    bit snap -m "CI" --build && \
+    bit lane create "${laneName}" || exit 1
+    bit snap -m "CI" --build || exit 1
     # Operations on bit lane
     bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
-    bit export
+    bit export || exit 1
 
     # Fetch existing comments from the pull request using GitHub API
     existingComments=$(curl --header "Authorization: token $GITHUB_TOKEN" \
