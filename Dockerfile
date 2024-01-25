@@ -67,7 +67,6 @@ RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
 
 # Set the default bit configurations for docker
 ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
-ENV BIT_CONFIG_ANONYMOUS_REPORTING="false"
 ENV BIT_CONFIG_INTERACTIVE="false"
 
 USER root
