@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Check if BIT_CONFIG_USER_TOKEN or $BIT_CLOUD_ACCESS_TOKEN is set
-if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CLOUD_ACCESS_TOKEN" ]]; then
-    echo "Error: Neither BIT_CONFIG_USER_TOKEN nor BIT_CLOUD_ACCESS_TOKEN environment variable is set. At least one of them is required!"
+# Check if $BIT_CLOUD_ACCESS_TOKEN is set
+if [[ -z "$BIT_CLOUD_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CLOUD_ACCESS_TOKEN environment variable is not set. It is required!"
     exit 1
 fi
 
