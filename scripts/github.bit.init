@@ -6,6 +6,12 @@ if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CLOUD_ACCESS_TOKEN" ]]; then
     exit 1
 fi
 
+# Assign BIT_CLOUD_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [[ -n "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CLOUD_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
 # Extract the "engine" version
 engine_version=$(grep '"engine":' workspace.jsonc | awk -F'"' '{print $4}')
 
