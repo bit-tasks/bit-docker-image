@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Check if $BIT_CLOUD_ACCESS_TOKEN is set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CLOUD_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CLOUD_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CLOUD_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CLOUD_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
 # Check if both variables are set
 if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
     echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
