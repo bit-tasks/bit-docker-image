@@ -113,7 +113,7 @@ GitLab CI/CD Using Scripts
 image: bitsrc/nightly:latest
 
 variables:
-  BIT_CLOUD_ACCESS_TOKEN: "bit_cloud_access_token"
+  BIT_CONFIG_ACCESS_TOKEN: "bit_config_access_token"
   GIT_USER_NAME: “git_user_name”
   GIT_USER_EMAIL: “git”_user_email
 
