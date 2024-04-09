@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Check if BIT_CONFIG_ACCESS_TOKEN is set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CONFIG_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Ensure BITBUCKET_ACCESS_TOKEN is set for API calls
+if [[ -z "$BITBUCKET_ACCESS_TOKEN" ]]; then
+    echo "Error: BITBUCKET_ACCESS_TOKEN environment variable is not set. It is required for API calls!"
+    exit 1
+fi
+
+PR_NUMBER=$BITBUCKET_PR_ID
+
+# Determine if there are any new or modified components
+statusRaw=$(bit status --strict --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+
+laneName="pr-$PR_NUMBER"
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+    laneLink="https://bit.cloud/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/~lane/${laneName}"
+
+    bit lane create "${laneName}" || exit 1
+    bit snap -m "CI" --build || exit 1
+    # Operations on bit lane
+    bit lane remove "${BITBUCKET_WORKSPACE}.${BITBUCKET_REPO_SLUG}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
+    bit export || exit 1
+
+    ACCESS_TOKEN=$BITBUCKET_ACCESS_TOKEN
+
+    # Fetch existing comments from the pull request using Bitbucket API
+    existingComments=$(curl -s --header "Authorization: Bearer $ACCESS_TOKEN" \
+                            "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/pullrequests/$PR_NUMBER/comments")
+
+    # Check if a specific comment already exists
+    commentExists=$(echo "$existingComments" | jq '.values[] | select(.content.raw | contains("Please review the changes in the Bit lane")) | .id')
+
+    if [[ -z "$commentExists" ]]; then
+        # If the comment does not exist, post a new comment
+        curl -s --request POST \
+             --header "Authorization: Bearer $ACCESS_TOKEN" \
+             --header "Content-Type: application/json" \
+             --data "{ \"content\": { \"raw\": \"⚠️ Please review the changes in the Bit lane: ${laneLink}\" } }" \
+             "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/pullrequests/$PR_NUMBER/comments"
+        echo "Posted a new comment."
+    else
+        echo "A similar comment already exists. No new comment was added."
+    fi
+fi
