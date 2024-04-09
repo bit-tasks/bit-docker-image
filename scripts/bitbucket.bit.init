@@ -42,7 +42,7 @@ export ORG
 export SCOPE
 
 # Instead of saving to $GITHUB_ENV, we save to a file that can be sourced in subsequent steps
-echo "ORG=$ORG" >> $BITBUCKET_PIPELINES_SHARED_STORAGE/env_vars.sh
-echo "SCOPE=$SCOPE" >> $BITBUCKET_PIPELINES_SHARED_STORAGE/env_vars.sh
+echo "ORG=$ORG" > /tmp/ws.env
+echo "SCOPE=$SCOPE" >> /tmp/ws.env
 
 bit install
