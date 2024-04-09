@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Check if both variables are set
+if [ -z "$GIT_USER_NAME" ] || [ -z "$GIT_USER_EMAIL" ]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+# Setting git configuration
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
+
+git add .bitmap pnpm-lock.yaml
+
+# Default commit message
+commitMessage="update .bitmap and pnpm-lock.yaml with new component and dependency versions (automated)"
+
+# Check for custom Bitbucket Pipeline environment variable to skip CI
+if [ "$SKIP_CI" = "true" ]; then
+    commitMessage+=" [skip ci]"
+fi
+
+git commit -m "$commitMessage"
+
+# Check for custom Bitbucket Pipeline environment variable to skip push
+if [ "$SKIP_PUSH" = "true" ]; then
+    echo "Skipping git push"
+else
+    git push origin HEAD
+fi
