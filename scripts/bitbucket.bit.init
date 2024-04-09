@@ -41,7 +41,7 @@ SCOPE=$(echo $defaultScope | cut -d'.' -f2)
 export ORG
 export SCOPE
 
-# Instead of saving to $GITHUB_ENV, we save to a file that can be sourced in subsequent steps
+# Save variables for other script to access
 echo "ORG=$ORG" > /tmp/ws.env
 echo "SCOPE=$SCOPE" >> /tmp/ws.env
 
