@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Check if the script is triggered by a Bitbucket pull request
+if [ -z "$BITBUCKET_PR_ID" ]; then
+    echo "Error: Ensure this task is triggered by a Bitbucket pull request"
+    exit 1
+fi
+
+laneName="pr-$BITBUCKET_PR_ID"
+bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
