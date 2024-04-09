@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Assuming ws.env or its equivalent settings are set as Bitbucket environment variables
+# If ws.env is crucial, ensure its contents are set as environment variables in Bitbucket
+
+if [ -z "$BITBUCKET_REPO_SLUG" ] || [ -z "$BITBUCKET_BRANCH" ]; then
+    echo "Error: Ensure this task is triggered when creating a new branch"
+    exit 1
+fi
+
+# Determine if there are any new or modified components
+statusRaw=$(bit status --json)
+newComponentsCount=$(echo "$statusRaw" | jq '.newComponents | length')
+modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
+
+if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
+    laneName="$BITBUCKET_BRANCH"
+    echo "https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
+    bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
+
+    bit status --strict
+    bit lane create "${laneName}"
+    bit snap -m "CI" --build
+    bit export
+fi
