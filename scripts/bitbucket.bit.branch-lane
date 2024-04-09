@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load variables from ws.env file
+source /tmp/ws.env
+
 # Check if $BIT_CONFIG_ACCESS_TOKEN is set
 if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
     echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
@@ -11,9 +14,6 @@ if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
     BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
     export BIT_CONFIG_USER_TOKEN
 fi
-
-# Load variables from ws.env file
-source /tmp/ws.env
 
 if [ -z "$BITBUCKET_REPO_SLUG" ] || [ -z "$BITBUCKET_BRANCH" ]; then
     echo "Error: Ensure this task is triggered when creating a new branch"
