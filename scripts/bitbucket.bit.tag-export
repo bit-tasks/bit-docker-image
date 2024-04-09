@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Ensure Bitbucket access token is set for Bitbucket API calls
+if [ -z "$BITBUCKET_ACCESS_TOKEN" ]; then
+    echo "Error: BITBUCKET_ACCESS_TOKEN environment variable is required for Bitbucket API calls."
+    exit 1
+fi
+
+# Fetch the pull request title using Bitbucket API
+if [ -z "$BITBUCKET_PR_ID" ]; then
+    echo "This script is intended to run on pull request events. BITBUCKET_PR_ID is not set."
+    exit 1
+else
+    PR_TITLE=$(curl -s -u "x-token-auth:$BITBUCKET_ACCESS_TOKEN" \
+        "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/pullrequests/$BITBUCKET_PR_ID" | jq -r '.title')
+
+    if [ -z "$PR_TITLE" ]; then
+        echo "Failed to fetch pull request title or title is empty."
+        exit 1
+    fi
+fi
+
+echo "Pull Request Title: $PR_TITLE"
+
+keywords=("patch" "major" "minor" "pre-release")
+version="Unknown"
+
+# Determine version based on PR title
+for keyword in "${keywords[@]}"; do
+    if [[ "$PR_TITLE" == *"$keyword"* ]]; then
+        version="$keyword"
+        break
+    fi
+done
+
+# Fallback to commit message if version is still unknown
+if [[ "$version" == "Unknown" ]]; then
+    COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+    for keyword in "${keywords[@]}"; do
+        if [[ "$COMMIT_MESSAGE" == *"[${keyword}]"* ]]; then
+            version="$keyword"
+            break
+        fi
+    done
+fi
+
+echo "Determined Version: $version"
+
+command="bit tag -m 'CI' --build"
+
+if [[ "$version" != "Unknown" ]]; then
+    command+=" --$version"
+fi
+
+# Check for custom Bitbucket Pipeline environment variable to persist changes
+if [[ " $@ " == *"--persist"* ]]; then
+    command+=" --persist"
+fi
+
+echo "Executing: $command"
+$command
+bit export
