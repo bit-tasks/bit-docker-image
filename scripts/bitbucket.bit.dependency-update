@@ -5,7 +5,7 @@ source /tmp/ws.env
 
 # Check if $BIT_CONFIG_ACCESS_TOKEN is set
 if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
-    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN repository variable secret is not set. It is required!"
     exit 1
 fi
 
@@ -20,7 +20,7 @@ export GIT_TERMINAL_PROMPT=0
 
 # Check if both variables are set
 if [ -z "$GIT_USER_NAME" ] || [ -z "$GIT_USER_EMAIL" ]; then
-    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in repository variables."
     exit 1
 fi
 
