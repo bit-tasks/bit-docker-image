@@ -12,8 +12,8 @@ if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
     export BIT_CONFIG_USER_TOKEN
 fi
 
-# Assuming ws.env or its equivalent settings are set as Bitbucket environment variables
-# If ws.env is crucial, ensure its contents are set as environment variables in Bitbucket
+# Load variables from ws.env file
+source /tmp/ws.env
 
 if [ -z "$BITBUCKET_REPO_SLUG" ] || [ -z "$BITBUCKET_BRANCH" ]; then
     echo "Error: Ensure this task is triggered when creating a new branch"
