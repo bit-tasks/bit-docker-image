@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [ -z "$BIT_CONFIG_USER_TOKEN" ] && [ -z "$BIT_CONFIG_ACCESS_TOKEN" ]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [ -z "$BIT_CONFIG_USER_TOKEN" ]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Disable git terminal prompt to prevent the script from getting stuck waiting for input
+export GIT_TERMINAL_PROMPT=0
+
+# Check if both variables are set
+if [ -z "$GIT_USER_NAME" ] || [ -z "$GIT_USER_EMAIL" ]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+# Setting git configuration
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
+
+allow="all"
+branch="main"
+branchName="bit-dependency-update"
+commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow"
+prTitle="Update bit dependencies"
+prBody="This PR updates the bit dependencies."
+
+# Extract the parameters
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        --allow)
+        allow="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --branch)
+        branch="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        *)
+        # Unknown option
+        shift # past argument
+        ;;
+    esac
+done
+
+echo "Allow: $allow"
+echo "Branch: $branch"
+
+# ... [No changes to the bit commands]
+
+# Check git status
+statusOutput=$(git status --porcelain)
+
+# If there's any change
+if [ -n "$statusOutput" ]; then
+    echo "Found modified components or dependencies"
+   
+    git checkout -b "$branchName"
+    git add .
+    git commit -m "$commitMessage"
+
+    # Push changes to the new branch
+    git push origin "$branchName"
+
+    # Create a pull request using Bitbucket API
+    accessToken="$BITBUCKET_ACCESS_TOKEN" # Ensure this is set in your Bitbucket pipeline variables
+    workspace="$BITBUCKET_WORKSPACE"
+    repoSlug="$BITBUCKET_REPO_SLUG"
+
+    createPRResponse=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $accessToken" \
+        -d "{
+            \"title\": \"$prTitle\",
+            \"source\": {
+                \"branch\": {
+                    \"name\": \"$branchName\"
+                }
+            },
+            \"destination\": {
+                \"branch\": {
+                    \"name\": \"$branch\"
+                }
+            },
+            \"description\": \"$prBody\"
+        }" \
+        "https://api.bitbucket.org/2.0/repositories/$workspace/$repoSlug/pullrequests")
+
+    prLink=$(echo "$createPRResponse" | jq -r '.links.html.href')
+    prId=$(echo "$createPRResponse" | jq -r '.id')
+
+    if [ "$prId" != "null" ]; then
+        echo "Pull request created successfully: $prLink"
+    else
+        echo "Failed to create pull request"
+        echo "$createPRResponse"
+        exit 1
+    fi
+else
+    echo "No changes detected, skipping pull request creation."
+fi
