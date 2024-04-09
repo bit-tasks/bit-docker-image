@@ -31,12 +31,12 @@ modifiedComponentsCount=$(echo "$statusRaw" | jq '.modifiedComponents | length')
 laneName="pr-$PR_NUMBER"
 
 if [ "$newComponentsCount" -gt 0 ] || [ "$modifiedComponentsCount" -gt 0 ]; then
-    laneLink="https://bit.cloud/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO_SLUG}/~lane/${laneName}"
+    laneLink="https://bit.cloud/${ORG}/${SCOPE}/~lane/${laneName}"
 
     bit lane create "${laneName}" || exit 1
     bit snap -m "CI" --build || exit 1
     # Operations on bit lane
-    bit lane remove "${BITBUCKET_WORKSPACE}.${BITBUCKET_REPO_SLUG}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
+    bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
     bit export || exit 1
 
     ACCESS_TOKEN=$BITBUCKET_ACCESS_TOKEN
