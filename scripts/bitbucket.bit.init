@@ -12,6 +12,12 @@ if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
     export BIT_CONFIG_USER_TOKEN
 fi
 
+# Ensure BITBUCKET_ACCESS_TOKEN is set for API calls
+if [[ -z "$BITBUCKET_ACCESS_TOKEN" ]]; then
+    echo "Error: BITBUCKET_ACCESS_TOKEN environment variable is not set. It is required for API calls!"
+    exit 1
+fi
+
 # Extract the "engine" version
 engine_version=$(grep '"engine":' workspace.jsonc | awk -F'"' '{print $4}')
 
