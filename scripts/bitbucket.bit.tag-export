@@ -21,57 +21,71 @@ if [ -z "$BITBUCKET_ACCESS_TOKEN" ]; then
     exit 1
 fi
 
-# Fetch the pull request title using Bitbucket API
-if [ -z "$BITBUCKET_PR_ID" ]; then
-    echo "This script is intended to run on pull request events. BITBUCKET_PR_ID is not set."
-    exit 1
-else
-    PR_TITLE=$(curl -s -u "x-token-auth:$BITBUCKET_ACCESS_TOKEN" \
-        "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/pullrequests/$BITBUCKET_PR_ID" | jq -r '.title')
+# Setting git configuration
+git config --global --add safe.directory /opt/atlassian/pipelines/agent/build
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
 
-    if [ -z "$PR_TITLE" ]; then
-        echo "Failed to fetch pull request title or title is empty."
-        exit 1
-    fi
+# Retrieve the last commit hash
+commit_sha=$(git rev-parse HEAD)
+
+# Attempt to fetch associated PR details using Bitbucket API with BITBUCKET_ACCESS_TOKEN
+response=$(curl -s -H "Authorization: Bearer $BITBUCKET_ACCESS_TOKEN" \
+    "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/commit/$commit_sha/pullrequests")
+
+# Parse the response to find the PR ID
+PR_ID=$(echo "$response" | jq -r '.values[0].id // empty')
+
+if [[ -z "$PR_ID" ]]; then
+    echo "No Pull Request found for the last commit ($commit_sha). Proceeding without PR-specific actions."
+else
+    echo "Found Pull Request ID: $PR_ID"
 fi
 
-echo "Pull Request Title: $PR_TITLE"
-
+# Extract version information from commit or PR
 keywords=("patch" "major" "minor" "pre-release")
 version="Unknown"
 
-# Determine version based on PR title
-for keyword in "${keywords[@]}"; do
-    if [[ "$PR_TITLE" == *"$keyword"* ]]; then
-        version="$keyword"
-        break
-    fi
-done
+# If a PR was found, attempt to extract version information from PR title
+if [[ -n "$PR_ID" ]]; then
+    PR_DETAILS=$(curl -s -H "Authorization: Bearer $BITBUCKET_ACCESS_TOKEN" \
+        "https://api.bitbucket.org/2.0/repositories/$BITBUCKET_WORKSPACE/$BITBUCKET_REPO_SLUG/pullrequests/$PR_ID")
+    
+    PR_TITLE=$(echo "$PR_DETAILS" | jq -r '.title')
+    for keyword in "${keywords[@]}"; do
+      if [[ "$PR_TITLE" == *"[${keyword}]"* ]]; then
+          version="$keyword"
+          break
+      fi
+    done
+fi
 
 # Fallback to commit message if version is still unknown
 if [[ "$version" == "Unknown" ]]; then
     COMMIT_MESSAGE=$(git log -1 --pretty=%B)
     for keyword in "${keywords[@]}"; do
-        if [[ "$COMMIT_MESSAGE" == *"[${keyword}]"* ]]; then
-            version="$keyword"
-            break
-        fi
+      if [[ "$COMMIT_MESSAGE" == *"[${keyword}]"* ]]; then
+        version="$keyword"
+        break
+      fi
     done
 fi
 
+# Display the determined version
 echo "Determined Version: $version"
 
+# Construct the Bit command
 command="bit tag -m 'CI' --build"
 
 if [[ "$version" != "Unknown" ]]; then
-    command+=" --$version"
+  command+=" --$version"
 fi
 
-# Check for custom Bitbucket Pipeline environment variable to persist changes
 if [[ " $@ " == *"--persist"* ]]; then
     command+=" --persist"
 fi
 
+# Run the Bit command
 echo "Executing: $command"
 $command
 bit export
