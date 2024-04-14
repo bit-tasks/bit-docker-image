@@ -68,6 +68,8 @@ RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
 # Set the default bit configurations for docker
 ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
 ENV BIT_CONFIG_INTERACTIVE="false"
+ENV BIT_DISABLE_CONSOLE="true"
+ENV BIT_DISABLE_SPINNER="true"
 
 USER root
 COPY scripts /home/bituser/scripts
