@@ -27,13 +27,19 @@ RUN apt-get update \
 
 # Create a new user "bituser" and switch to it
 RUN useradd -m bituser
+
+# Modify permissions for /usr/local/bin to allow symlink creation by non-root users
+RUN chmod a+w /usr/local/bin
+
+# Install and prepare Corepack
+RUN corepack enable
+RUN corepack prepare pnpm@latest-9 --activate
+
+# Switch to user "bituser"
 USER bituser
 
 # Create the workspace directory within the user's home directory
 RUN mkdir -p /home/bituser/workspace
-
-# Set the correct permissions for the workspace directory
-RUN chown -R bituser:bituser /home/bituser/workspace
 
 # Set the working directory to the user's workspace
 WORKDIR /home/bituser/workspace
@@ -71,12 +77,15 @@ ENV BIT_CONFIG_INTERACTIVE="false"
 ENV BIT_DISABLE_CONSOLE="true"
 ENV BIT_DISABLE_SPINNER="true"
 
+# Copy scripts and ensure permissions
 USER root
 COPY scripts /home/bituser/scripts
 RUN chown -R bituser:bituser /home/bituser/scripts
 RUN chmod +x /home/bituser/scripts/*
 ENV PATH=$PATH:/home/bituser/scripts
-User bituser
+
+# Switch back to bituser for running commands
+USER bituser
 
 # Set the default command to start a shell
 CMD ["/bin/bash"]
