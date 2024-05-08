@@ -31,12 +31,9 @@ RUN useradd -m bituser
 # Modify permissions for /usr/local/bin to allow symlink creation by non-root users
 RUN chmod a+w /usr/local/bin
 
-# Install and prepare Corepack
+# Install and prepare Corepack for managing pnpm
 RUN corepack enable
 RUN corepack prepare pnpm@latest-9 --activate
-
-# Make sure pnpm is globally accessible
-RUN npm install -g pnpm
 
 # Switch to user "bituser"
 USER bituser
@@ -51,7 +48,7 @@ WORKDIR /home/bituser/workspace
 RUN mkdir /home/bituser/.npm-global
 RUN mkdir -p /home/bituser/.npm-global/lib
 
-# Configure npm to use the new directory path
+# Configure npm to use the new directory path and ensure global binaries are accessible
 ENV PATH=/home/bituser/.npm-global/bin:$PATH
 ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
 
