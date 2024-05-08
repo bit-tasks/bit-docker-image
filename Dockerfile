@@ -35,6 +35,9 @@ RUN chmod a+w /usr/local/bin
 RUN corepack enable
 RUN corepack prepare pnpm@latest-9 --activate
 
+# Make sure pnpm is globally accessible
+RUN npm install -g pnpm
+
 # Switch to user "bituser"
 USER bituser
 
