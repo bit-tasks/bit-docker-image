@@ -15,14 +15,19 @@ fi
 # Load variables from ws.env file
 source /tmp/ws.env
 
-# Fetch merge requests associated with the commit
-MR_DETAILS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/commits/$CI_COMMIT_SHA/merge_requests")
+# Check if $CI_MERGE_REQUEST_IID is set
+if [[ -n "$CI_MERGE_REQUEST_IID" ]]; then
+    LAST_MERGED_MR_IID="$CI_MERGE_REQUEST_IID"
+else
+    # Fetch merge requests associated with the commit
+    MR_DETAILS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/repository/commits/$CI_COMMIT_SHA/merge_requests")
 
-# Extract the state and ID of the last merged MR
-LAST_MERGED_MR_IID=$(echo "$MR_DETAILS" | jq '.[] | select(.state == "merged") | .iid' | head -1)
+    # Extract the state and ID of the last merged MR
+    LAST_MERGED_MR_IID=$(echo "$MR_DETAILS" | jq '.[] | select(.state == "merged") | .iid' | head -1)
+fi
 
 if [ -n "$LAST_MERGED_MR_IID" ]; then
-    echo "The last merged MR ID resulting in this push is: $LAST_MERGED_MR_ID"
+    echo "The last merged MR ID resulting in this push is: $LAST_MERGED_MR_IID"
     laneName="mr-$LAST_MERGED_MR_IID"
     bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
 else
