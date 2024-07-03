@@ -62,10 +62,6 @@ RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE n
 RUN npx @teambit/bvm install
 ENV PATH=$PATH:/home/bituser/bin
 
-# Get Bit CLI version and set as label
-RUN BIT_VERSION=$(bit -v) && \
-    LABEL org.opencontainers.image.version=${BIT_VERSION}
-
 # Set the NODE_OPTIONS environment variable to increase the heap size
 ARG NODE_HEAP_SIZE=4096
 LABEL node.heap.size=${NODE_HEAP_SIZE}
