@@ -24,7 +24,7 @@ jobs:
       - name: Install Bit and get version
         run: |
           npm install -g @teambit/bvm
-          npx @teambit/bvm install
+          SHELL=bash npx @teambit/bvm install
           BIT_VERSION=$(bit -v)
           echo "BIT_VERSION=$BIT_VERSION" >> $GITHUB_ENV
 
