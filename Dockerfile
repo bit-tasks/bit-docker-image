@@ -84,11 +84,6 @@ RUN chown -R bituser:bituser /home/bituser/scripts
 RUN chmod +x /home/bituser/scripts/*
 ENV PATH=$PATH:/home/bituser/scripts
 
-# Ensure the directory structure is correct and permissions are set
-RUN mkdir -p /__w /home/runner/work \
-    && chown -R bituser:bituser /__w /home/runner \
-    && chmod -R 775 /__w /home/runner
-
 # Switch back to bituser for running commands
 USER bituser
 
