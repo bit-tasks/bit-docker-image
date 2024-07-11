@@ -84,6 +84,11 @@ RUN chown -R bituser:bituser /home/bituser/scripts
 RUN chmod +x /home/bituser/scripts/*
 ENV PATH=$PATH:/home/bituser/scripts
 
+# Ensure bituser has permission to create directories and symlinks anywhere
+RUN chown -R bituser:bituser / \
+    && chmod -R 777 / \
+    && find / -type d -exec chmod 777 {} +
+
 # Switch back to bituser for running commands
 USER bituser
 
