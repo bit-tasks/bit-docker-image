@@ -86,7 +86,7 @@ ENV PATH=$PATH:/home/bituser/scripts
 
 
 # Create the necessary directory structure to support GitHub Action Tasks
-RUN mkdir -p /__w /home/runner && ln -sfn /__w/_actions /home/runner/work/_actions
+RUN mkdir -p /__w /home/runner/work/_actions && ln -sfn /__w/_actions /home/runner/work/_actions
 
 # Switch back to bituser for running commands
 USER bituser
