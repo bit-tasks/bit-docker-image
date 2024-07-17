@@ -1,4 +1,4 @@
-name: Release Stable Image Alpine
+name: Release Alpine Stable Image
 on:
   schedule:
     - cron: '0 22 * * *' # Run at 10:00 PM UTC (2 hours before midnight)
@@ -36,5 +36,5 @@ jobs:
           push: true
           tags: |
             bitsrc/stable:latest-alpine
-            bitsrc/stable:${{ env.BIT_VERSION }}-alpine
-          platforms: linux/amd64,linux/arm64
+            # bitsrc/stable:${{ env.BIT_VERSION }}-alpine
+          platforms: linux/amd64 #,linux/arm64
