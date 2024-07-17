@@ -6,25 +6,6 @@ RUN apk add --no-cache bash
 # Set the SHELL environment variable to bash
 ENV SHELL=/bin/bash
 
-# Install system packages needed for Bit development server
-RUN apk add --no-cache \
-    jq \
-    alsa-lib \
-    atk \
-    at-spi2-core \
-    dbus \
-    libdrm \
-    mesa-gl \
-    nspr \
-    nss \
-    libxcomposite \
-    libxdamage \
-    libxfixes \
-    libxkbcommon \
-    libxrandr \
-    cups \
-    zstd
-
 # Create a new user "bituser" and switch to it
 RUN adduser -D bituser
 
