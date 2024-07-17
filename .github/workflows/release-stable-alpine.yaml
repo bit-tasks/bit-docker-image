@@ -1,7 +1,7 @@
 name: Release Alpine Stable Image
 on:
   schedule:
-    - cron: '0 22 * * *' # Run at 10:00 PM UTC (2 hours before midnight)
+    - cron: '0 21 * * *' # Run at 10:00 PM UTC (2 hours before midnight)
   workflow_dispatch:
 
 jobs:
@@ -33,6 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          file: Dockerfile.alpine
           push: true
           tags: |
             bitsrc/stable:latest-alpine
