@@ -23,11 +23,7 @@ RUN apk add --no-cache \
     libxkbcommon \
     libxrandr \
     cups \
-    zstd \
-    && apk add --no-cache --virtual .build-deps \
-    build-base \
-    python3 \
-    && ln -sf /usr/bin/python3 /usr/bin/python
+    zstd
 
 # Create a new user "bituser" and switch to it
 RUN adduser -D bituser
