@@ -25,10 +25,8 @@ RUN apk add --no-cache \
     cups \
     zstd \
     && apk add --no-cache --virtual .build-deps \
-    gcc \
-    g++ \
+    build-base \
     python3 \
-    make \
     && ln -sf /usr/bin/python3 /usr/bin/python
 
 # Create a new user "bituser" and switch to it
