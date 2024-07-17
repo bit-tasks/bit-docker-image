@@ -10,11 +10,11 @@ ENV SHELL=/bin/bash
 RUN apk add --no-cache \
     jq \
     alsa-lib \
-    atk-dev \
+    atk \
     at-spi2-core \
-    dbus-libs \
+    dbus \
     libdrm \
-    mesa-dev \
+    mesa-gl \
     nspr \
     nss \
     libxcomposite \
@@ -22,7 +22,7 @@ RUN apk add --no-cache \
     libxfixes \
     libxkbcommon \
     libxrandr \
-    cups-libs \
+    cups \
     zstd \
     && apk add --no-cache --virtual .build-deps \
     gcc \
