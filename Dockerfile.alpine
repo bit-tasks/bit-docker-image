@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
-# Install bash
-RUN apk add --no-cache bash
+# Install bash and git
+RUN apk add --no-cache bash git
 
 # Set the SHELL environment variable to bash
 ENV SHELL=/bin/bash
