@@ -37,4 +37,5 @@ jobs:
           push: true
           tags: |
             bitsrc/stable:latest-alpine
-          platforms: linux/amd64
+            bitsrc/stable:${{ env.BIT_VERSION }}-alpine
+          platforms: linux/amd64,linux/arm64
