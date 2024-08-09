@@ -21,18 +21,39 @@ if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
     exit 1
 fi
 
-# Check if $LANE_NAME environment variable is set
+# Parse arguments
+LANE_NAME=""
+BRANCH_NAME=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --lane-name)
+      LANE_NAME="$2"
+      shift 2
+      ;;
+    --branch-name)
+      BRANCH_NAME="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Check if LANE_NAME is set
 if [ -z "$LANE_NAME" ]; then
-  echo "Error: Please set the $LANE_NAME environment variable"
+  echo "Error: Please set the --lane-name argument"
   exit 1
 fi
 
-# If $BRANCH_NAME environment variable is not set, assign it the value of $LANE_NAME
+# If BRANCH_NAME is not set, assign it the value of LANE_NAME
 if [ -z "$BRANCH_NAME" ]; then
   BRANCH_NAME="$LANE_NAME"
 fi
 
-# Bit commands with error handling
+# Bit commands
 bit import -x
 bit lane import "$LANE_NAME"
 bit init --reset-lane-new
