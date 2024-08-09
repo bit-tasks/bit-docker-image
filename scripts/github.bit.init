@@ -39,4 +39,9 @@ export SCOPE
 echo "ORG=$ORG" >> $GITHUB_ENV
 echo "SCOPE=$SCOPE" >> $GITHUB_ENV
 
-bit install
+# Check if --skip-install is passed as an argument
+if [[ " $@ " == *"--skip-install"* ]]; then
+    echo "Skipping bit install"
+else
+    bit install || exit 1
+fi
