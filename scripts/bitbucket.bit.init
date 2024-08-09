@@ -45,4 +45,9 @@ export SCOPE
 echo "ORG=$ORG" > /tmp/ws.env
 echo "SCOPE=$SCOPE" >> /tmp/ws.env
 
-bit install
+# Check if --skip-install is passed as an argument
+if [[ " $@ " == *"--skip-install"* ]]; then
+    echo "Skipping bit install"
+else
+    bit install
+fi
