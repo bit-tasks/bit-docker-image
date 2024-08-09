@@ -17,6 +17,12 @@ if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
     export BIT_CONFIG_USER_TOKEN
 fi
 
+# Check if both variables are set
+if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
 # Parse arguments
 laneName=""
 branchName=""
