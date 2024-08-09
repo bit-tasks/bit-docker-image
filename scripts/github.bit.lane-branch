@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Usage example:
+# ./github.bit.lane-branch --lane-name feature-branch --branch-name feature-branch
+# OR (if branch name is the same as lane name)
+# ./github.bit.lane-branch --lane-name feature-branch
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CONFIG_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN if not set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Parse arguments
+laneName=""
+branchName=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --lane-name)
+      laneName="$2"
+      shift 2
+      ;;
+    --branch-name)
+      branchName="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Check if laneName is provided
+if [ -z "$laneName" ]; then
+  echo "Error: --lane-name is mandatory."
+  exit 1
+fi
+
+# If branchName is not set, assign it the value of laneName
+if [ -z "$branchName" ]; then
+  branchName="$laneName"
+fi
+
+# Load variables from ws.env file
+source /tmp/ws.env
+
+# Bit commands
+bit import -x
+bit lane import $laneName
+bit init --reset-lane-new
+
+# Set git configuration
+git config --global user.name "${GIT_USER_NAME}"
+git config --global user.email "${GIT_USER_EMAIL}"
+
+# Git operations
+git checkout -b "${branchName}"
+git add .
+git commit -m "Committing the latest updates from lane: ${laneName} to the Git branch (automated) [skip-ci]"
+git push origin "${branchName}" -f
