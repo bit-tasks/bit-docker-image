@@ -59,7 +59,7 @@ fi
 
 # Bit commands
 bit import -x
-bit lane import $laneName
+bit lane import "${laneName}"
 bit init --reset-lane-new
 
 # Set git configuration
