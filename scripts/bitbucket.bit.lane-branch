@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Load variables from ws.env file
+source /tmp/ws.env
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CONFIG_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN if not set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+# Check if GIT_USER_NAME and GIT_USER_EMAIL are set
+if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+# Check if $LANE_NAME environment variable is set
+if [ -z "$LANE_NAME" ]; then
+  echo "Error: Please set the $LANE_NAME environment variable"
+  exit 1
+fi
+
+# If $BRANCH_NAME environment variable is not set, assign it the value of $LANE_NAME
+if [ -z "$BRANCH_NAME" ]; then
+  BRANCH_NAME="$LANE_NAME"
+fi
+
+# Bit commands with error handling
+bit import -x || { echo "Bit import failed"; exit 1; }
+bit lane import "$LANE_NAME" || { echo "Bit lane import failed"; exit 1; }
+bit init --reset-lane-new || { echo "Bit init failed"; exit 1; }
+
+# Set git configuration
+git config --global --add safe.directory /opt/atlassian/pipelines/agent/build
+git config --global user.name "${GIT_USER_NAME}"
+git config --global user.email "${GIT_USER_EMAIL}"
+
+# Git operations
+git checkout -b "$BRANCH_NAME" || { echo "Git checkout failed"; exit 1; }
+git add . || { echo "Git add failed"; exit 1; }
+git commit -m "Committing the latest updates from lane: ${LANE_NAME} to the Git branch (automated) [skip-ci]" || { echo "Git commit failed"; exit 1; }
+git push origin "$BRANCH_NAME" -f || { echo "Git push failed"; exit 1; }
