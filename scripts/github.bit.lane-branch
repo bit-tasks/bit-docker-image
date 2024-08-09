@@ -55,9 +55,6 @@ if [ -z "$branchName" ]; then
   branchName="$laneName"
 fi
 
-# Load variables from ws.env file
-source /tmp/ws.env
-
 # Bit commands
 bit import -x
 bit lane import $laneName
