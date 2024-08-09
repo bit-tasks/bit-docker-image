@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Load variables from ws.env file
+source /tmp/ws.env
+
+# Check if $BIT_CONFIG_ACCESS_TOKEN is set
+if [[ -z "$BIT_CONFIG_USER_TOKEN" && -z "$BIT_CONFIG_ACCESS_TOKEN" ]]; then
+    echo "Error: BIT_CONFIG_ACCESS_TOKEN environment variable is not set. It is required!"
+    exit 1
+fi
+
+# Assign BIT_CONFIG_ACCESS_TOKEN to BIT_CONFIG_USER_TOKEN
+if [[ -z "$BIT_CONFIG_USER_TOKEN" ]]; then
+    BIT_CONFIG_USER_TOKEN="$BIT_CONFIG_ACCESS_TOKEN"
+    export BIT_CONFIG_USER_TOKEN
+fi
+
+if [[ -z "$GIT_USER_NAME" || -z "$GIT_USER_EMAIL" ]]; then
+    echo "Error: Both GIT_USER_NAME and GIT_USER_EMAIL must be set in environment variables."
+    exit 1
+fi
+
+if [[ -z "$GITLAB_TOKEN" ]]; then
+    echo "Error: GITLAB_TOKEN must be set in CI/CD or environment variables."
+    exit 1
+fi
+
+# Parse arguments
+laneName=""
+branchName=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --lane-name)
+      laneName="$2"
+      shift 2
+      ;;
+    --branch-name)
+      branchName="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Check if laneName is provided
+if [ -z "$laneName" ]; then
+  echo "Error: --lane-name is mandatory."
+  exit 1
+fi
+
+# If branchName is not set, assign it the value of laneName
+if [ -z "$branchName" ]; then
+  branchName="$laneName"
+fi
+
+# Bit commands
+bit import -x
+bit lane import $laneName
+bit init --reset-lane-new
+
+# Set git configuration
+git config --global --add safe.directory "${CI_PROJECT_DIR}"
+git config --global user.name "${GIT_USER_NAME}"
+git config --global user.email "${GIT_USER_EMAIL}"
+git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
+
+# Git operations
+git checkout -b "${branchName}"
+git add .
+git commit -m "Committing the latest updates from lane: ${laneName} to the Git branch (automated) [skip-ci]"
+git push origin "${branchName}" -f
