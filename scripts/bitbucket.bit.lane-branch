@@ -33,9 +33,9 @@ if [ -z "$BRANCH_NAME" ]; then
 fi
 
 # Bit commands with error handling
-bit import -x || { echo "Bit import failed"; exit 1; }
-bit lane import "$LANE_NAME" || { echo "Bit lane import failed"; exit 1; }
-bit init --reset-lane-new || { echo "Bit init failed"; exit 1; }
+bit import -x
+bit lane import "$LANE_NAME"
+bit init --reset-lane-new
 
 # Set git configuration
 git config --global --add safe.directory /opt/atlassian/pipelines/agent/build
@@ -43,7 +43,7 @@ git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 
 # Git operations
-git checkout -b "$BRANCH_NAME" || { echo "Git checkout failed"; exit 1; }
-git add . || { echo "Git add failed"; exit 1; }
-git commit -m "Committing the latest updates from lane: ${LANE_NAME} to the Git branch (automated) [skip-ci]" || { echo "Git commit failed"; exit 1; }
-git push origin "$BRANCH_NAME" -f || { echo "Git push failed"; exit 1; }
+git checkout -b "$BRANCH_NAME"
+git add .
+git commit -m "Committing the latest updates from lane: ${LANE_NAME} to the Git branch (automated) [skip-ci]"
+git push origin "$BRANCH_NAME" -f
