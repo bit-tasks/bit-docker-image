@@ -5,6 +5,11 @@ on:
     - cron: '0 21 * * *' # Run at 10:00 PM UTC (2 hours before midnight)
   workflow_dispatch:
 
+# Set permissions globally for all jobs in the workflow
+permissions:
+  contents: read
+  packages: write
+  
 jobs:
   release:
     runs-on: ubuntu-latest
