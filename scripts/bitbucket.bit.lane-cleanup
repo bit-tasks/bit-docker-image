@@ -22,4 +22,14 @@ if [ -z "$BITBUCKET_PR_ID" ]; then
 fi
 
 laneName="pr-$BITBUCKET_PR_ID"
-bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
+
+# Check for custom Bitbucket Pipeline environment variable ARCHIVE
+if [ "$ARCHIVE" = "true" ]; then
+    curl -X POST "https://api.v2.bit.cloud/graphql" \
+         -H "Content-Type: application/json" \
+         -H "Authorization: Bearer $BIT_TOKEN" \
+         -d '{"query": "mutation DELETE_LANE($id: String!) { deleteLane(id: $id) }", "variables": {"id": "'"${ORG}.${SCOPE}/${laneName}"'"}}'
+else
+    bit lane remove "${ORG}.${SCOPE}/${laneName}" --remote --silent --force &> /dev/null || echo "Warning: Failed to remove the lane."
+fi
+
