@@ -42,10 +42,14 @@ git config --global --add safe.directory "${CI_PROJECT_DIR}"
 
 allow="all"
 branch="main"
-branchName="bit-dependency-update";
-commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow";
-mrTitle="Update bit dependencies";
-mrBody="This MR updates the bit dependencies.";
+branchName="bit-dependency-update"
+commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow"
+mrTitle="Update bit dependencies"
+mrBody="This MR updates the bit dependencies."
+componentPatterns=""
+envPatterns=""
+packagePatterns=""
+versionUpdatePolicy=""
 
 # Extract the parameters
 while [[ $# -gt 0 ]]; do
@@ -62,6 +66,26 @@ while [[ $# -gt 0 ]]; do
         shift  # past argument
         shift  # past value
         ;;
+        --component-patterns)
+        componentPatterns="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --env-patterns)
+        envPatterns="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --package-patterns)
+        packagePatterns="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
+        --version-update-policy)
+        versionUpdatePolicy="$2"
+        shift  # past argument
+        shift  # past value
+        ;;
         *)
         # Unknown option
         shift # past argument
@@ -71,23 +95,31 @@ done
 
 echo "Allow: $allow"
 echo "Branch: $branch"
+echo "Component Patterns: ${componentPatterns:-"not provided"}"
+echo "Env Patterns: ${envPatterns:-"not provided"}"
+echo "Package Patterns: ${packagePatterns:-"not provided"}"
+echo "Version Update Policy: ${versionUpdatePolicy:-"not provided"}"
 
 # Convert the comma-separated string into an array.
 IFS=',' read -ra allowArray <<< "$allow"
 
 if contains "all" "${allowArray[@]}" || contains "workspace-components" "${allowArray[@]}"; then
-    bit checkout head --all
-    echo "updating workspace-components"
+    bit checkout head --all "${componentPatterns}"
+    echo "Updating workspace-components"
 fi
 
 if contains "all" "${allowArray[@]}" || contains "envs" "${allowArray[@]}"; then
-    bit envs update
-    echo "updating env-components"
+    bit envs update "${envPatterns}"
+    echo "Updating env-components"
 fi
 
 if contains "all" "${allowArray[@]}" || contains "external-dependencies" "${allowArray[@]}"; then
-    bit update -y
-    echo "updating external dependencies"
+    semverOption=""
+    if [[ -n "$versionUpdatePolicy" ]]; then
+        semverOption="--${versionUpdatePolicy}"
+    fi
+    bit update -y ${semverOption} "${packagePatterns}"
+    echo "Updating external dependencies"
 fi
 
 # Check git status
