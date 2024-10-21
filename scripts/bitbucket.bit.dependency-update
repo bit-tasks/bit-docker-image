@@ -28,39 +28,46 @@ fi
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
 
-allow="all"
-branch="main"
-branchName="bit-dependency-update"
-commitMessage="Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow"
-prTitle="Update bit dependencies"
-prBody="This PR updates the bit dependencies."
-
-# Extract the parameters
-while [[ $# -gt 0 ]]; do
-    key="$1"
-
-    case $key in
-        --allow)
-        allow="$2"
-        shift  # past argument
-        shift  # past value
-        ;;
-        --branch)
-        branch="$2"
-        shift  # past argument
-        shift  # past value
-        ;;
-        *)
-        # Unknown option
-        shift # past argument
-        ;;
-    esac
-done
+# Assign values from environment variables or use default values
+allow="${BIT_ALLOW:-all}"
+branch="${BIT_BRANCH:-main}"
+branchName="${BIT_BRANCH_NAME:-bit-dependency-update}"
+commitMessage="${BIT_COMMIT_MESSAGE:-Update Bit envs, outdated (direct) external dependencies, and workspace components according to the defined CI task parameter --allow}"
+prTitle="${BIT_PR_TITLE:-Update bit dependencies}"
+prBody="${BIT_PR_BODY:-This PR updates the bit dependencies.}"
+componentPatterns="${BIT_COMPONENT_PATTERNS:-""}"
+envPatterns="${BIT_ENV_PATTERNS:-""}"
+packagePatterns="${BIT_PACKAGE_PATTERNS:-""}"
+versionUpdatePolicy="${BIT_VERSION_UPDATE_POLICY:-""}"
 
 echo "Allow: $allow"
 echo "Branch: $branch"
+echo "Component Patterns: ${componentPatterns:-"not provided"}"
+echo "Env Patterns: ${envPatterns:-"not provided"}"
+echo "Package Patterns: ${packagePatterns:-"not provided"}"
+echo "Version Update Policy: ${versionUpdatePolicy:-"not provided"}"
 
-# ... [No changes to the bit commands]
+# Convert the comma-separated string into an array.
+IFS=',' read -ra allowArray <<< "$allow"
+
+if contains "all" "${allowArray[@]}" || contains "workspace-components" "${allowArray[@]}"; then
+    bit checkout head --all "${componentPatterns}"
+    echo "Updating workspace-components"
+fi
+
+if contains "all" "${allowArray[@]}" || contains "envs" "${allowArray[@]}"; then
+    bit envs update "${envPatterns}"
+    echo "Updating env-components"
+fi
+
+if contains "all" "${allowArray[@]}" || contains "external-dependencies" "${allowArray[@]}"; then
+    semverOption=""
+    if [[ -n "$versionUpdatePolicy" ]]; then
+        semverOption="--${versionUpdatePolicy}"
+    fi
+    bit update -y ${semverOption} "${packagePatterns}"
+    echo "Updating external dependencies"
+fi
 
 # Check git status
 statusOutput=$(git status --porcelain)
