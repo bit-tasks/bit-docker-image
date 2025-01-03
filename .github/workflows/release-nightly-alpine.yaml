@@ -1,0 +1,44 @@
+name: Release Alpine Nightly Image New
+on:
+  schedule:
+    - cron: '0 21 * * *' # Run at 10:00 PM UTC (2 hours before midnight)
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Install Bit and get version
+        run: |
+          npm install -g @teambit/bvm
+          SHELL=bash npx @teambit/bvm config set RELEASE_TYPE nightly
+          SHELL=bash npx @teambit/bvm install
+          export PATH=$HOME/bin:$PATH
+          BIT_VERSION=$(bit -v)
+          echo "BIT_VERSION=$BIT_VERSION" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile.alpine
+          push: true
+          tags: |
+            bitsrc/core:nightly-alpine
+            bitsrc/core:${{ env.BIT_VERSION }}-alpine
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            NIGHTLY=true
