@@ -1,0 +1,81 @@
+FROM node:20-alpine
+
+# Install bash and git
+RUN apk add --no-cache bash git
+
+# Set the SHELL environment variable to bash
+ENV SHELL=/bin/bash
+
+# Create a new user "bituser" and switch to it
+RUN adduser -D bituser
+
+# Modify permissions for /usr/local/bin to allow symlink creation by non-root users
+RUN chmod a+w /usr/local/bin
+
+# Install and prepare Corepack for managing pnpm
+RUN corepack enable
+RUN corepack prepare pnpm@latest-9 --activate
+
+# Switch to user "bituser"
+USER bituser
+
+# Create the server directory within the user's home directory
+RUN mkdir -p /home/bituser/server
+
+# Set the working directory to the user's server
+WORKDIR /home/bituser/server
+
+# Create a directory for global installations
+RUN mkdir /home/bituser/.npm-global
+RUN mkdir -p /home/bituser/.npm-global/lib
+
+# Configure npm to use the new directory path and ensure global binaries are accessible
+ENV PATH=/home/bituser/.npm-global/bin:$PATH
+ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
+
+# Install BVM and Bit
+RUN npm install -g @teambit/bvm
+
+# Set release type to nightly based on NIGHTLY argument
+ARG NIGHTLY=false
+RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE nightly ; fi
+
+RUN npx @teambit/bvm install
+ENV PATH=$PATH:/home/bituser/bin
+
+# Set the NODE_OPTIONS environment variable to increase the heap size
+ARG NODE_HEAP_SIZE=4096
+LABEL node.heap.size=${NODE_HEAP_SIZE}
+ENV NODE_OPTIONS="--max-old-space-size=${NODE_HEAP_SIZE}"
+
+# Set the correct registry
+RUN npm config set '@bit:registry' https://node-registry.bit.cloud
+RUN npm config set '@teambit:registry' https://node-registry.bit.cloud
+
+# Set the default bit configurations for docker
+ENV BIT_CONFIG_ANALYTICS_REPORTING="false"
+ENV BIT_CONFIG_INTERACTIVE="false"
+ENV BIT_DISABLE_CONSOLE="true"
+ENV BIT_DISABLE_SPINNER="true"
+
+# Copy scripts and ensure permissions
+USER root
+COPY scripts /home/bituser/scripts
+RUN chown -R bituser:bituser /home/bituser/scripts
+RUN chmod +x /home/bituser/scripts/*
+ENV PATH=$PATH:/home/bituser/scripts
+
+# Ensure bituser has permission to create directories and symlinks
+RUN mkdir -p /__w /home \
+    && chown -R bituser:bituser /home /__w \
+    && chmod -R 775 /home /__w
+
+# Switch back to bituser for running commands
+USER bituser
+
+# Set the default command to start a shell
+CMD ["/bin/bash"]
+
+# Initialize and start the barescope server
+RUN bit init --bare
+CMD bit start
