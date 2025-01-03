@@ -36,6 +36,6 @@ jobs:
           file: Dockerfile.server
           push: true
           tags: |
-            bitsrc/server:latest
+            bitsrc/server:stable
             bitsrc/server:${{ env.BIT_VERSION }}
           platforms: linux/amd64,linux/arm64
