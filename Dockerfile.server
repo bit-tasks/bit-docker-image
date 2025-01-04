@@ -1,5 +1,5 @@
-ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-alpine
+ARG NODE_VERSION=20-alpine
+FROM node:${NODE_VERSION}
 
 # Install bash and git
 RUN apk add --no-cache bash git
