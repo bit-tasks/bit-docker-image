@@ -1,4 +1,5 @@
-FROM node:20-alpine
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-alpine
 
 # Install bash and git
 RUN apk add --no-cache bash git
@@ -72,9 +73,6 @@ RUN mkdir -p /__w /home \
 
 # Switch back to bituser for running commands
 USER bituser
-
-# Set the default command to start a shell
-CMD ["/bin/bash"]
 
 # Initialize and start the barescope server
 RUN bit init --bare
