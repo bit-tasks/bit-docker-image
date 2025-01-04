@@ -20,11 +20,11 @@ RUN corepack prepare pnpm@latest-9 --activate
 # Switch to user "bituser"
 USER bituser
 
-# Create the server directory within the user's home directory
-RUN mkdir -p /home/bituser/server
+# Create the remote-server directory within the user's home directory
+RUN mkdir -p /home/bituser/remote-server
 
-# Set the working directory to the user's server
-WORKDIR /home/bituser/server
+# Set the working directory to the user's remote-server
+WORKDIR /home/bituser/remote-server
 
 # Create a directory for global installations
 RUN mkdir /home/bituser/.npm-global
