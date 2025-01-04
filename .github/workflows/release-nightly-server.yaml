@@ -40,3 +40,6 @@ jobs:
             bitsrc/server:nightly
             bitsrc/server:${{ env.BIT_VERSION }}
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            NIGHTLY=true
+            NODE_VERSION=22
