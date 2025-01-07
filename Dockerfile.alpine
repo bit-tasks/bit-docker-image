@@ -43,7 +43,7 @@ RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE n
 
 RUN npx @teambit/bvm install \
  && npx cache clean --force \
- && && npm cache clean --force \
+ && npm cache clean --force \
     && rm -rf ~/.bvm
 
 ENV PATH=$PATH:/home/bituser/bin
