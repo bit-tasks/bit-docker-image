@@ -59,9 +59,9 @@ RUN npm install -g @teambit/bvm \
 
 # Set release type to nightly based on NIGHTLY argument
 ARG NIGHTLY=false
-RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE nightly ; fi
+RUN if [ "$NIGHTLY" = "true" ] ; then bvm config set RELEASE_TYPE nightly ; fi
 
-RUN npx @teambit/bvm install
+RUN bvm upgrade
 ENV PATH=$PATH:/home/bituser/bin
 
 # Set the NODE_OPTIONS environment variable to increase the heap size
