@@ -58,8 +58,8 @@ ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
 #     && npm cache clean --force
 
 # Set release type to nightly based on NIGHTLY argument
-ARG NIGHTLY=false
-RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE nightly ; fi
+# ARG NIGHTLY=false
+# RUN if [ "$NIGHTLY" = "true" ] ; then npx @teambit/bvm config set RELEASE_TYPE nightly ; fi
 
 RUN npx @teambit/bvm install
 ENV PATH=$PATH:/home/bituser/bin
