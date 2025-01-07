@@ -24,7 +24,7 @@ RUN apt-get update \
         libxrandr2 \
         libcups2 \
         zstd \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Create a new user "bituser" and switch to it
 RUN useradd -m bituser
@@ -54,7 +54,8 @@ ENV PATH=/home/bituser/.npm-global/bin:$PATH
 ENV NPM_CONFIG_PREFIX=/home/bituser/.npm-global
 
 # Install BVM and Bit
-RUN npm install -g @teambit/bvm
+RUN npm install -g @teambit/bvm \
+    && npm cache clean --force
 
 # Set release type to nightly based on NIGHTLY argument
 ARG NIGHTLY=false
