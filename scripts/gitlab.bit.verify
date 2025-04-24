@@ -15,7 +15,12 @@ fi
 # Load variables from ws.env file
 source /tmp/ws.env
 
-bit status --strict
+# Check if DEBUG is set and append --log to bit status if it is
+if [[ -n "$DEBUG" ]]; then
+    bit status --strict --log
+else
+    bit status --strict
+fi
 
 # Check if --skip-ci is passed as an argument
 if [[ " $@ " == *"--skip-build"* ]]; then

@@ -43,5 +43,10 @@ echo "SCOPE=$SCOPE" >> /tmp/ws.env
 if [[ " $@ " == *"--skip-install"* ]]; then
     echo "Skipping bit install"
 else
-    bit install
+    # Check if DEBUG is set and append --log to bit install if it is
+    if [[ -n "$DEBUG" ]]; then
+        bit install --log
+    else
+        bit install
+    fi
 fi
